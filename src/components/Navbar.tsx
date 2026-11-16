@@ -3,6 +3,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useState } from "react";
 import {
   BookOpen,
   Menu,
@@ -11,7 +12,7 @@ import {
   Library,
   Bookmark,
   History,
-  Plus,
+  Sparkles,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -30,93 +31,74 @@ const navLinks = [
 
 export default function Navbar() {
   const pathname = usePathname();
+  const [query, setQuery] = useState("");
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-[#e9e4dc] bg-[#faf9f6]/95 backdrop-blur-xl">
-      <div className="container mx-auto flex h-[76px] max-w-7xl items-center justify-between px-4 md:px-6">
+    <header className="sticky top-0 z-50 w-full border-b border-[#EAE7F2] bg-[#F5F4FA]/95 backdrop-blur-xl">
+      <div className="container mx-auto flex h-[76px] max-w-7xl items-center gap-3 px-4 md:px-6">
 
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-2.5">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#183d32] text-white">
+        <Link href="/" className="flex shrink-0 items-center gap-2.5">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#5426B8] text-white">
             <BookOpen size={23} strokeWidth={2.2} />
           </div>
 
           <div>
-            <h1 className="text-xl font-bold tracking-tight text-[#183d32]">
-              BookNook
+            <h1 className="text-xl font-bold tracking-tight text-[#19152B]">
+              Book<span className="text-[#5426B8]">Nook</span>
             </h1>
-            <p className="text-[10px] font-medium tracking-[2px] text-gray-500">
-              YOUR READING SPACE
+            <p className="text-[10px] font-medium tracking-[2px] text-[#8B5CF6]">
+              READ • BORROW • EXPLORE
             </p>
           </div>
         </Link>
 
-        {/* Desktop Navigation */}
-        <nav className="hidden items-center gap-1 lg:flex">
-          {navLinks.map((link) => {
-            const Icon = link.icon;
-            const isActive =
-              pathname === link.href ||
-              (link.href !== "/" && pathname.startsWith(link.href + "/"));
-
-            return (
-              <Link
-                key={link.name}
-                href={link.href}
-                className={`flex items-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold transition-all duration-300 ${
-                  isActive
-                    ? "text-[#183d32]"
-                    : "hover:text-[#052217]"
-                }`}
-              >
-                <Icon size={17} />
-                {link.name}
-              </Link>
-            );
-          })}
-        </nav>
-
-        {/* Right Actions */}
-        <div className="hidden items-center gap-3 lg:flex">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="rounded-full text-gray-600 transition-colors hover:bg-[#5426B8] hover:text-white"
-            
-          >
-            <Link href="/books">
-               
-            </Link>
-          </Button>
-
-          <Button
-            variant="outline"
-            className="gap-2 rounded-lg border-[#dcd6cc] font-semibold text-[#183d32] transition-all hover:border-[#5426B8] hover:bg-[#5426B8] hover:text-white"
-            
-          >
-            <Link href="/login">
-              
-              <UserRound size={17} />Sign In
-            </Link>
-          </Button>
-
-          <Button
-            className="gap-2 rounded-lg bg-[#183d32] font-semibold text-white transition-all hover:bg-[#5426B8]"
-            
-          >
-            <Link href="/register">
-              Get Started
-            </Link>
-          </Button>
+        {/* Search (md and up) */}
+        <div className="relative ml-2 hidden md:block">
+          <Search
+            size={17}
+            className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400"
+          />
+          <input
+            type="search"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search books..."
+            aria-label="Search books"
+            className="h-10 w-48 rounded-full border border-[#dcd6cc] bg-white pl-10 pr-4 text-sm font-medium text-[#19152B] outline-none transition-all placeholder:text-gray-400 focus:w-64 xl:w-64 xl:focus:w-72 focus:border-[#5426B8] focus:ring-2 focus:ring-[#5426B8]/20"
+          />
         </div>
 
-        {/* Mobile Navigation */}
+        {/* Right Actions (all devices) */}
+        <div className="flex-1" />
+
+        <Button
+          variant="outline"
+          className=" gap-2 shrink-0 rounded-full border-[#dcd6cc] px-4 font-semibold text-[#5426B8] transition-all hover:border-[#5426B8] hover:bg-[#EDE9FE] hover:text-[#5426B8] sm:px-4"
+          
+        >
+          <Link href="/login">
+            <UserRound size={17} className="mr-1 inline"/>
+            <span className="hidden sm:inline">Log In</span>
+          </Link>
+        </Button>
+
+        <Button
+          className="shrink-0 hidden sm:flex rounded-full bg-[#5426B8] px-4 font-semibold text-white transition-all hover:bg-[#451D96]"
+          
+        >
+          <Link href="/register">
+             Sign up
+          </Link>
+        </Button>
+
+        {/* Sidebar Menu (all devices) */}
         <Sheet>
           <SheetTrigger >
             <Button
               variant="outline"
               size="icon"
-              className="rounded-lg lg:hidden"
+              className="shrink-0 rounded-lg border-[#dcd6cc] text-[#5426B8] hover:border-[#5426B8] hover:bg-[#5426B8] hover:text-white"
             >
               <Menu size={22} />
             </Button>
@@ -124,15 +106,27 @@ export default function Navbar() {
 
           <SheetContent
             side="right"
-            className="w-[300px] border-l border-[#e9e4dc] bg-[#faf9f6] p-5"
+            className="w-[300px] border-l border-[#EAE7F2] bg-[#F5F4FA] p-5"
           >
-            <div className="mb-8 mt-8 flex items-center gap-2.5">
-              <BookOpen className="text-[#183d32]" size={27} />
-              <span className="text-xl font-bold text-[#183d32]">
-                BookNook
-              </span>
+            {/* Logo Header */}
+            <div className="mb-6 flex flex-col items-center gap-1 pt-2">
+              <div className="relative flex h-12 w-12 items-center justify-center rounded-2xl bg-[#F1EAFF] text-[#5426B8]">
+                <BookOpen size={30} strokeWidth={2.2} />
+                <Sparkles
+                  size={14}
+                  className="absolute -right-1.5 -top-1.5 text-[#8B5CF6]"
+                />
+              </div>
+
+              <h2 className="mt-2 text-2xl font-bold tracking-tight text-[#19152B]">
+                Book<span className="text-[#5426B8]">Nook</span>
+              </h2>
+              <p className="text-[10px] font-semibold tracking-[2.5px] text-[#8B5CF6]">
+                READ • BORROW • EXPLORE
+              </p>
             </div>
 
+            {/* Nav Items */}
             <nav className="flex flex-col gap-2">
               {navLinks.map((link) => {
                 const Icon = link.icon;
@@ -145,10 +139,10 @@ export default function Navbar() {
                   <Link
                     key={link.name}
                     href={link.href}
-                    className={`flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-semibold transition-all duration-300 ${
+                    className={`flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold transition-all duration-200 ${
                       isActive
-                        ? "bg-[#e9eee9] text-[#183d32]"
-                        : "text-gray-600 hover:bg-[#5426B8] hover:text-white"
+                        ? "text-[#3F3D56] hover:bg-[#EDE9FE] hover:text-[#5426B8]"
+                        : "text-[#3F3D56] hover:bg-[#EDE9FE] hover:text-[#5426B8]"
                     }`}
                   >
                     <Icon size={19} />
@@ -158,25 +152,50 @@ export default function Navbar() {
               })}
             </nav>
 
-            <div className="mt-8 flex flex-col gap-3">
+            {/* Divider */}
+            <div className="my-5 border-t border-[#EAE7F2]" />
+
+            {/* Auth Actions */}
+            <div className="flex flex-col gap-3">
               <Button
                 variant="outline"
-                className="w-full hover:bg-[#5426B8] hover:text-white"
+                className="w-full rounded-xl border-[#dcd6cc] font-semibold text-[#19152B] hover:border-[#5426B8] hover:bg-[#EDE9FE] hover:text-[#5426B8]"
                 
               >
-                <Link href="/login">Sign In</Link>
+                <Link href="/login">
+                  <UserRound size={17} className="mr-1 inline" />
+                  Sign In
+                </Link>
               </Button>
 
               <Button
-                className="w-full bg-[#183d32] text-white hover:bg-[#5426B8]"
+                className="w-full rounded-xl bg-[#5426B8] font-semibold text-white hover:bg-[#451D96]"
                 
               >
-                <Link href="/register">Get Started</Link>
+                <Link href="/register">Sign up</Link>
               </Button>
             </div>
           </SheetContent>
         </Sheet>
 
+      </div>
+
+      {/* Search (below md — full-width row) */}
+      <div className="px-4 pb-3 md:hidden">
+        <div className="relative">
+          <Search
+            size={17}
+            className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400"
+          />
+          <input
+            type="search"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search books..."
+            aria-label="Search books"
+            className="h-10 w-full rounded-full border border-[#dcd6cc] bg-white pl-10 pr-4 text-sm font-medium text-[#19152B] outline-none transition-all placeholder:text-gray-400 focus:border-[#5426B8] focus:ring-2 focus:ring-[#5426B8]/20"
+          />
+        </div>
       </div>
     </header>
   );

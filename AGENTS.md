@@ -1,6 +1,17 @@
 # booknook
 
-Freshly scaffolded Next.js 16 app — most app code is still to be written. Keep changes consistent with the scaffolding choices below.
+BookNook — a library/book-tracking web app. Next.js 16 app with an early front-end skeleton in place (no backend, data fetching, or auth yet). Keep changes consistent with the scaffolding choices below.
+
+## App structure (current state)
+
+- `src/app/page.tsx` — public home page, renders `src/components/Navbar.tsx`.
+- `src/app/(dashboard)/` — route group for the logged-in area; its layout renders `src/components/dashboard/Sidebar.tsx` + content offset (`md:pl-20 lg:pl-64`). Only `/dashboard` (welcome placeholder) exists so far.
+- Nav links reference routes that do **not** exist yet — create them as needed:
+  - Public: `/books`, `/my-books`, `/my-borrows`, `/login`, `/register`
+  - Dashboard: `/dashboard/{books,discover,add-book,my-books,my-borrows,bookmarks,book-clubs,settings}`
+- Feature components are hand-written by the user (not shadcn primitives). Note: `Navbar.tsx` and `Sidebar.tsx` import icons from `lucide-react` (installed) even though shadcn components use `hugeicons` — match the file you're editing.
+- Brand palette in use: public pages use deep green `#183d32` (header bg `#faf9f6`, border `#e9e4dc`); dashboard uses purple `#5426B8` / `#8B5CF6` accents on white with bg `#F8F7FC`. Don't introduce conflicting theme colors.
+- Logo images live in `src/assets/`.
 
 ## Commands
 
