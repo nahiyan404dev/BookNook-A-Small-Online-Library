@@ -1,5 +1,7 @@
 "use client"
 
+/* eslint-disable react-hooks/set-state-in-effect -- shadcn-generated file; direct setState in effect is intentional for init */
+
 import * as React from "react"
 import { cn } from "cn"
 import useEmblaCarousel, {
