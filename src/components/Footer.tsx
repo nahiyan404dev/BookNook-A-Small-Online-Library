@@ -24,12 +24,6 @@ const dashboardLinks = [
   { name: "Settings", href: "/dashboard/settings" },
 ];
 
-const socials = [
-  { name: "Facebook", href: "#", icon: Facebook },
-  { name: "Twitter", href: "#", icon: Twitter },
-  { name: "Instagram", href: "#", icon: Instagram },
-  { name: "GitHub", href: "#", icon: Github },
-];
 
 export default function Footer() {
   return (
@@ -58,22 +52,6 @@ export default function Footer() {
               and discovering your next great read.
             </p>
 
-            {/* Socials */}
-            <div className="mt-5 flex gap-2.5">
-              {socials.map((social) => {
-                const Icon = social.icon;
-                return (
-                  <a
-                    key={social.name}
-                    href={social.href}
-                    aria-label={social.name}
-                    className="flex h-9 w-9 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-white/70 transition-all hover:border-[#8B5CF6] hover:bg-[#5426B8] hover:text-white"
-                  >
-                    <Icon size={17} />
-                  </a>
-                );
-              })}
-            </div>
           </div>
 
           {/* Explore */}
