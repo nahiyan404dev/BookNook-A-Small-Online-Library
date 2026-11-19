@@ -41,9 +41,9 @@ export default function Navbar() {
       <div className="container mx-auto flex h-[76px] max-w-7xl items-center gap-3 px-4 md:px-6">
 
         {/* Logo */}
-        <Link href="/" className="flex shrink-0 items-center gap-2.5">
+        
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#5426B8] text-white">
-            <BookOpen size={23} strokeWidth={2.2} />
+            <Link href="/" className="flex shrink-0 items-center gap-2.5"><BookOpen size={23} strokeWidth={2.2} /></Link>
           </div>
 
           <div>
@@ -54,7 +54,7 @@ export default function Navbar() {
               READ • BORROW • EXPLORE
             </p>
           </div>
-        </Link>
+         
 
         {/* Search (md and up) */}
         <div className="relative ml-2 hidden md:block">
@@ -76,26 +76,28 @@ export default function Navbar() {
         <div className="flex-1" />
 
         <ThemeToggle />
-
+        <Link href="/login">
         <Button
           variant="outline"
           className=" gap-2 shrink-0 rounded-full border-[#dcd6cc] px-4 font-semibold text-[#5426B8] transition-all hover:border-[#5426B8] hover:bg-[#EDE9FE] hover:text-[#5426B8] sm:px-4 dark:border-white/10 dark:bg-white/5 dark:text-[#C4B5FD] dark:hover:border-[#8B5CF6] dark:hover:bg-[#5426B8] dark:hover:text-white"
           
         >
-          <Link href="/login">
+          
             <UserRound size={17} className=" mr-1 inline"/>
             <span className="hidden sm:inline">Log In</span>
-          </Link>
+          
         </Button>
-
+        </Link>
+        <Link href="/register">
         <Button
           className="shrink-0 hidden sm:flex rounded-full bg-[#5426B8] px-4 font-semibold text-white transition-all hover:bg-[#451D96]"
           
         >
-          <Link href="/register">
+          
              Sign up
-          </Link>
+          
         </Button>
+        </Link>
 
         {/* Sidebar Menu (all devices) */}
         <Sheet>
@@ -162,23 +164,26 @@ export default function Navbar() {
 
             {/* Auth Actions */}
             <div className="flex flex-col gap-3">
+              <Link href="/login">
               <Button
                 variant="outline"
                 className="w-full rounded-xl border-[#dcd6cc] font-semibold text-[#19152B] hover:border-[#5426B8] hover:bg-[#EDE9FE] hover:text-[#5426B8] dark:border-white/10 dark:bg-white/5 dark:text-white dark:hover:border-[#8B5CF6] dark:hover:bg-white/10 dark:hover:text-white"
                 
               >
-                <Link href="/login">
+                
                   <UserRound size={17} className="mr-1 inline" />
                   Sign In
-                </Link>
+                
               </Button>
-
+              </Link>
+              <Link href="/register">
               <Button
                 className="w-full rounded-xl bg-[#5426B8] font-semibold text-white hover:bg-[#451D96]"
                 
               >
-                <Link href="/register">Sign up</Link>
+                Sign up
               </Button>
+              </Link>
             </div>
           </SheetContent>
         </Sheet>

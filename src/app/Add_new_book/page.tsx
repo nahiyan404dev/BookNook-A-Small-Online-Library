@@ -92,7 +92,7 @@ export default function AddBookPage() {
     const formData = new FormData(form);
      
 
-    const res = await fetch('http://localhost:5000/add_book',{
+    const res = await fetch('http://localhost:5000/add-books',{
       method:'POST',
       headers:{
         'content-type': 'application/json',
