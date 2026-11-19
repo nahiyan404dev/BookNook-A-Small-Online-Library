@@ -104,7 +104,7 @@ export default function Footer() {
                   href="mailto:hello@booknook.app"
                   className="transition-colors hover:text-[#8B5CF6]"
                 >
-                  hello@booknook.app
+                  booknook404@booknook.app
                 </a>
               </li>
               <li className="flex items-center gap-2.5 text-sm text-white/60">
@@ -117,8 +117,8 @@ export default function Footer() {
 
         {/* Bottom bar */}
         <div className="mt-10 flex flex-col items-center justify-between gap-3 border-t border-white/10 pt-6 sm:flex-row">
-          <p className="text-xs text-white/50">
-            © {new Date().getFullYear()} BookNook. All rights reserved.
+          <p className="flex items-center gap-1 text-xs text-white/50">
+            &copy;2026 ,BookNook Official website.
           </p>
           <p className="flex items-center gap-1 text-xs text-white/50">
             Made with <Heart size={12} className="text-[#8B5CF6]" /> for book

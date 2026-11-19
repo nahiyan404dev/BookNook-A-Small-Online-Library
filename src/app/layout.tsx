@@ -4,6 +4,7 @@ import "./globals.css";
 import { cn } from "@/lib/utils";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { Toaster } from "@/components/ui/sonner";
 
 
 const figtree = Figtree({subsets:['latin'],variable:'--font-sans'});
@@ -44,6 +45,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <Navbar/>
         {children}
         <Footer />
+        <Toaster position="top-center" richColors closeButton />
         </body>
     </html>
   );
