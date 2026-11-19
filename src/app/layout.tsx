@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
+
 const figtree = Figtree({subsets:['latin'],variable:'--font-sans'});
 
 const geistSans = Geist({
@@ -18,9 +19,11 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "BookNook — Read • Borrow • Explore",
+  title: "BookNook— Read • Borrow • Explore",
   description:
     "Your cozy corner for tracking books, borrowing from the library, and discovering your next great read.",
+   
+  
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

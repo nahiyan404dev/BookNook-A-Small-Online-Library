@@ -11,10 +11,10 @@ import {
 } from "@/components/ui/carousel";
 
 const banners = [
-  { src: "/banners/banner-1.jpg", alt: "The Lord of the Rings banner" },
-  { src: "/banners/banner-2.jpg", alt: "The Lord of the Rings book set" },
-  { src: "/banners/banner-3.jpg", alt: "BookNook miniature bookshop" },
-  { src: "/banners/banner-4.jpg", alt: "BookNook banner" },
+  { src: '/banners/banner.jpg', alt: "Library" },
+  { src: "/banners/book_01.jpg", alt: "The" },
+  { src: "/banners/book_02.jpg", alt: "BookNook miniature bookshop" },
+  { src: '/banners/book_03.jpg', alt: "BookNook banner" },
 ];
 
 export default function BannerCarousel() {
@@ -22,14 +22,15 @@ export default function BannerCarousel() {
     <Carousel
       opts={{ loop: true }}
       plugins={[
-        Autoplay({ delay: 4000, stopOnInteraction: false, stopOnMouseEnter: true }),
+        Autoplay({ delay: 6000, stopOnInteraction: false, stopOnMouseEnter: true }),
       ]}
       className="w-full"
     >
-      <CarouselContent className="ml-0">
+      {/* Spacing: -ml-4 on the content + pl-4 on each item = 16px gap between slides */}
+      <CarouselContent className="-ml-4">
         {banners.map((banner) => (
-          <CarouselItem key={banner.src} className="pl-0">
-            <div className="relative aspect-[16/9] w-full overflow-hidden sm:aspect-[2/1] md:aspect-[2.8/1]">
+          <CarouselItem key={banner.src} className="pl-4">
+            <div className="relative w-full aspect-[16/9] overflow-hidden rounded-xl sm:aspect-[2/1] md:aspect-[2.8/1]">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={banner.src}

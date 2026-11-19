@@ -81,7 +81,7 @@ export default function Navbar() {
           
         >
           <Link href="/login">
-            <UserRound size={17} className="mr-1 inline"/>
+            <UserRound size={17} className=" mr-1 inline"/>
             <span className="hidden sm:inline">Log In</span>
           </Link>
         </Button>
