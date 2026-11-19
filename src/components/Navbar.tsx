@@ -26,7 +26,7 @@ import ThemeToggle from "@/components/ThemeToggle";
 
 const navLinks = [
   { name: "Home", href: "/", icon: BookOpen },
-  { name: "All Books", href: "/books", icon: Library },
+  { name: "All Books", href: "/allbooks", icon: Library },
   { name: "Add New Book", href: "/Add_new_book", icon: BookPlus },
   { name: "My Books", href: "/my-books", icon: Bookmark },
   { name: "My Borrows", href: "/my-borrows", icon: History },
