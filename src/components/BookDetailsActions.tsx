@@ -6,6 +6,7 @@ import {
   Bookmark,
   BookmarkCheck,
   Check,
+  Heart,
   ShoppingCart,
 } from "lucide-react";
 import { toast } from "sonner";
@@ -13,6 +14,13 @@ import { toast } from "sonner";
 import type { Book } from "@/lib/books";
 import { borrowBook, formatDay, isBookBorrowed } from "@/lib/borrows";
 import { addMyBook, isBookSaved, removeMyBook } from "@/lib/my-books";
+import {
+  addToWishlist,
+  isWishlisted,
+  notifyWishlistChange,
+  removeFromWishlist,
+  subscribeToWishlist,
+} from "@/lib/wishlist";
 import { cn } from "@/lib/utils";
 
 const LIBRARY_EVENT = "booknook:library-change";
@@ -48,6 +56,12 @@ export default function BookDetailsActions({ book }: BookDetailsActionsProps) {
   const saved = useSyncExternalStore(
     subscribeToLibrary,
     () => isBookSaved(book._id),
+    () => false
+  );
+
+  const wishlisted = useSyncExternalStore(
+    subscribeToWishlist,
+    () => isWishlisted(book._id),
     () => false
   );
 
@@ -95,6 +109,25 @@ export default function BookDetailsActions({ book }: BookDetailsActionsProps) {
 
     toast.success("Saved to My Books", {
       description: `Find "${book.name}" under My Books.`,
+    });
+  };
+
+  const handleWishlist = () => {
+    if (isWishlisted(book._id)) {
+      removeFromWishlist(book._id);
+      notifyWishlistChange();
+
+      toast.info("Removed from wishlist", {
+        description: `"${book.name}" is no longer one of your favourites.`,
+      });
+      return;
+    }
+
+    addToWishlist(book._id);
+    notifyWishlistChange();
+
+    toast.success("Added to wishlist", {
+      description: `Find "${book.name}" under Wishlist.`,
     });
   };
 
@@ -148,6 +181,29 @@ export default function BookDetailsActions({ book }: BookDetailsActionsProps) {
         )}
       >
         {saved ? <BookmarkCheck size={20} /> : <Bookmark size={20} />}
+      </button>
+
+      <button
+        type="button"
+        onClick={handleWishlist}
+        aria-pressed={wishlisted}
+        aria-label={
+          wishlisted
+            ? `Remove ${book.name} from wishlist`
+            : `Add ${book.name} to wishlist`
+        }
+        title={wishlisted ? "Remove from wishlist" : "Add to wishlist"}
+        className={cn(
+          "flex size-12 shrink-0 items-center justify-center rounded-xl border transition-colors",
+          wishlisted
+            ? "border-[#E11D48]/20 bg-white text-[#E11D48] dark:border-[#E11D48]/30 dark:bg-[#E11D48]/15 dark:text-[#FB7185]"
+            : "border-[#e9e4dc] bg-white text-[#183d32] hover:border-[#E11D48]/40 hover:text-[#E11D48] dark:border-white/10 dark:bg-white/5 dark:text-white dark:hover:border-[#E11D48]/40 dark:hover:text-[#FB7185]"
+        )}
+      >
+        <Heart
+          size={20}
+          className={wishlisted ? "fill-current" : undefined}
+        />
       </button>
     </div>
   );

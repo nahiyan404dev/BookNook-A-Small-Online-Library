@@ -1,12 +1,19 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useSyncExternalStore } from "react";
 import Link from "next/link";
-import { ShoppingCart, Check } from "lucide-react";
+import { ShoppingCart, Check, Heart } from "lucide-react";
 import { toast } from "sonner";
 
 import BookCover from "@/components/BookCover";
 import { formatPrice, getOriginalPrice, type Book } from "@/lib/books";
+import {
+  addToWishlist,
+  isWishlisted,
+  notifyWishlistChange,
+  removeFromWishlist,
+  subscribeToWishlist,
+} from "@/lib/wishlist";
 import { cn } from "@/lib/utils";
 
 type BookCardProps = {
@@ -15,6 +22,12 @@ type BookCardProps = {
 
 export default function BookCard({ book }: BookCardProps) {
   const [inCart, setInCart] = useState(false);
+
+  const wishlisted = useSyncExternalStore(
+    subscribeToWishlist,
+    () => isWishlisted(book._id),
+    () => false
+  );
 
   const rating = Number(book.rating);
   const originalPrice = getOriginalPrice(book);
@@ -29,17 +42,61 @@ export default function BookCard({ book }: BookCardProps) {
     });
   };
 
+  const handleWishlist = () => {
+    if (isWishlisted(book._id)) {
+      removeFromWishlist(book._id);
+      notifyWishlistChange();
+
+      toast.info("Removed from wishlist", {
+        description: `"${book.name}" is no longer one of your favourites.`,
+      });
+      return;
+    }
+
+    addToWishlist(book._id);
+    notifyWishlistChange();
+
+    toast.success("Added to wishlist", {
+      description: `Find "${book.name}" under Wishlist.`,
+    });
+  };
+
   return (
     <article className="group flex flex-col overflow-hidden border border-[#e9e4dc] bg-white p-3 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-[#183d32]/30 hover:shadow-lg hover:shadow-[#183d32]/10 dark:border-white/10 dark:bg-[#1F1A33] dark:hover:border-[#8B5CF6]/40">
-      
-      <Link href={detailsHref} aria-label={`View details for ${book.name}`}>
-        <BookCover
-          src={book.imageUrl}
-          alt={`Cover of ${book.name}`}
-          className="aspect-3/4 "
-          imgClassName="transition-transform duration-500 group-hover:scale-105"
-        />
-      </Link>
+      <div className="relative">
+        <Link href={detailsHref} aria-label={`View details for ${book.name}`}>
+          <BookCover
+            src={book.imageUrl}
+            alt={`Cover of ${book.name}`}
+            className="aspect-3/4 "
+            imgClassName="transition-transform duration-500 group-hover:scale-105"
+          />
+        </Link>
+
+        <button
+          type="button"
+          onClick={handleWishlist}
+          aria-pressed={wishlisted}
+          aria-label={
+            wishlisted
+              ? `Remove ${book.name} from wishlist`
+              : `Add ${book.name} to wishlist`
+          }
+          title={wishlisted ? "Remove from wishlist" : "Add to wishlist"}
+          className={cn(
+            "absolute right-2 top-2 z-10 flex size-9 items-center justify-center rounded-full border shadow-sm backdrop-blur transition-all active:scale-95",
+            wishlisted
+              ? "border-[#E11D48]/20 bg-white text-[#E11D48] dark:border-[#E11D48]/30 dark:bg-[#2A2440] dark:text-[#FB7185]"
+              : "border-[#e9e4dc] bg-white/90 text-[#6B7280] hover:border-[#E11D48]/40 hover:text-[#E11D48] dark:border-white/15 dark:bg-[#1F1A33]/90 dark:text-white/60 dark:hover:text-[#FB7185]"
+          )}
+        >
+          <Heart
+            size={16}
+            className={wishlisted ? "fill-current" : undefined}
+            aria-hidden="true"
+          />
+        </button>
+      </div>
 
       <div className="flex flex-1 flex-col px-1 pt-4">
         <h3 className="line-clamp-2 text-[15px] leading-snug font-bold tracking-tight text-[#19152B] sm:text-base dark:text-white">

@@ -13,6 +13,7 @@ import {
   History,
   Sparkles,
   BookPlus,
+  Heart,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -23,7 +24,7 @@ import {
 } from "@/components/ui/sheet";
 import ThemeToggle from "@/components/ThemeToggle";
 import NavbarSearch from "@/components/NavbarSearch";
-import { WiseIcon } from "@hugeicons/core-free-icons";
+
 
 const navLinks = [
   { name: "Home", href: "/", icon: BookOpen },
@@ -31,7 +32,7 @@ const navLinks = [
   { name: "Add New Book", href: "/Add_new_book", icon: BookPlus },
   { name: "My Books", href: "/my-books", icon: Bookmark },
   { name: "My Borrows", href: "/my-borrows", icon: History },
-  { name: "Wishlist", href: "/wishlist", icon: History },
+  { name: "Wishlist", href: "/wishlist", icon: Heart },
 ];
 
 export default function Navbar() {
