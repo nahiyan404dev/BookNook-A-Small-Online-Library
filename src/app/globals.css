@@ -128,3 +128,250 @@
     @apply font-sans;
   }
 }
+
+/* ------------------------------------------------------------------
+   Home hero — editorial "Reading Library" banner motion
+------------------------------------------------------------------- */
+
+@keyframes hero-float {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) rotate(0deg);
+  }
+  50% {
+    transform: translate3d(0, -16px, 0) rotate(-1.1deg);
+  }
+}
+
+@keyframes hero-appear {
+  from {
+    opacity: 0;
+    transform: translateY(28px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes hero-rise {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes hero-swap {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+    filter: blur(3px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+}
+
+@keyframes hero-glow {
+  0%,
+  100% {
+    transform: translate3d(-3%, -2%, 0) scale(1);
+    opacity: 0.55;
+  }
+  50% {
+    transform: translate3d(3%, 3%, 0) scale(1.12);
+    opacity: 0.85;
+  }
+}
+
+@keyframes hero-pulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.45;
+    transform: scale(0.7);
+  }
+}
+
+.hero-appear {
+  animation: hero-appear 900ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+.hero-rise {
+  animation: hero-rise 800ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+.hero-float {
+  animation: hero-float var(--dur, 9s) ease-in-out var(--delay, 0s) infinite;
+  will-change: transform;
+}
+
+.hero-glow {
+  animation: hero-glow var(--dur, 20s) ease-in-out var(--delay, 0s) infinite;
+  will-change: transform, opacity;
+}
+
+.hero-pulse {
+  animation: hero-pulse 2.4s ease-in-out infinite;
+}
+
+.hero-parallax {
+  transform: translate3d(
+    calc(var(--mx, 0) * var(--depth, 16) * 1px),
+    calc(var(--my, 0) * var(--depth, 16) * 1px),
+    0
+  );
+  transition: transform 500ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.hero-tilt {
+  transform: rotateY(-21deg) rotateX(4deg) rotateZ(var(--tilt, 0deg));
+  transform-style: preserve-3d;
+  transition:
+    transform 700ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    box-shadow 700ms ease;
+}
+
+.hero-tilt:hover {
+  transform: rotateY(-7deg) rotateX(0deg)
+    rotateZ(calc(var(--tilt, 0deg) * 0.35)) translateY(-8px) scale(1.03);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-appear,
+  .hero-rise,
+  .hero-float,
+  .hero-glow,
+  .hero-pulse {
+    animation: none !important;
+  }
+
+  .hero-parallax {
+    transform: none;
+    transition: none;
+  }
+
+  .hero-tilt {
+    transition: none;
+  }
+}
+
+/* ------------------------------------------------------------------
+   Add Book route — loading skeleton
+------------------------------------------------------------------- */
+
+@keyframes skeleton-sweep {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes skeleton-book {
+  0%,
+  100% {
+    transform: scaleY(0.45);
+    opacity: 0.55;
+  }
+  50% {
+    transform: scaleY(1);
+    opacity: 1;
+  }
+}
+
+@layer components {
+  .book-skeleton {
+    position: relative;
+    overflow: hidden;
+    background-color: #ece9f3;
+  }
+
+  .book-skeleton::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    transform: translateX(-100%);
+    background-image: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.72) 50%,
+      transparent 100%
+    );
+    animation: skeleton-sweep 1.6s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  }
+
+  .dark .book-skeleton {
+    background-color: rgba(255, 255, 255, 0.07);
+  }
+
+  .dark .book-skeleton::after {
+    background-image: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.09) 50%,
+      transparent 100%
+    );
+  }
+
+  .skeleton-book-bar {
+    transform-origin: bottom;
+    animation: skeleton-book 1.15s ease-in-out infinite;
+  }
+
+  .panel-skeleton {
+    position: relative;
+    overflow: hidden;
+    background-color: #ece9f3;
+  }
+
+  .panel-skeleton::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    transform: translateX(-100%);
+    background-image: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.72) 50%,
+      transparent 100%
+    );
+    animation: skeleton-sweep 1.6s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  }
+
+  .dark .panel-skeleton {
+    background-color: rgba(255, 255, 255, 0.07);
+  }
+
+  .dark .panel-skeleton::after {
+    background-image: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.09) 50%,
+      transparent 100%
+    );
+  }
+}
+
+.discover-swap {
+  animation: hero-swap 520ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .book-skeleton::after,
+  .panel-skeleton::after,
+  .skeleton-book-bar {
+    animation: none !important;
+  }
+
+  .discover-swap {
+    animation: none !important;
+  }
+}

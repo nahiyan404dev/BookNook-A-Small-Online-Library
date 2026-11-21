@@ -33,6 +33,7 @@ import {
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 
+
 const CATEGORIES = [
   "Fiction",
   "Mystery",
@@ -154,7 +155,7 @@ export default function AddBookPage() {
         {/* Page Header */}
         <div className="space-y-3">
           <Link
-            href="/dashboard/books"
+            href="/allbooks"
             className="inline-flex items-center gap-2 text-sm font-medium text-[#6B7280] transition-colors hover:text-[#5426B8] dark:text-white/60 dark:hover:text-[#C4B5FD]"
           >
             <ArrowLeft size={16} />
@@ -449,14 +450,14 @@ export default function AddBookPage() {
                 )}
               </div>
 
-              <h3 className="line-clamp-2 text-base font-semibold break-words text-[#19152B] dark:text-white">
+              <h3 className="line-clamp-2 text-base font-semibold  text-[#19152B] dark:text-white">
                 {draft.name || "Your book title"}
               </h3>
               <p className="mt-1 text-sm text-[#6B7280] dark:text-white/60">
                 {draft.author || "Author name goes here"}
               </p>
               
-              <p className="mt-2 line-clamp-2 text-base font-semibold break-words text-[#454055] dark:text-white">
+              <p className="mt-2 line-clamp-2 text-base font-semibold  text-[#454055] dark:text-white">
                 {draft.description || "Books description"}
               </p>
               <div className="mt-3 flex flex-wrap items-center gap-2">
@@ -474,7 +475,7 @@ export default function AddBookPage() {
                 
               </div>
               <div className="mt-3 flex justify-between items-center p-2">
-                <h3 className="line-clamp-2 text-base font-semibold break-words text-[#5426B8] dark:text-white">
+                <h3 className="line-clamp-2 text-base font-semibold  text-[#5426B8] dark:text-white">
                 {`Price: ${draft.price}$` || "Book Duration"}
               </h3>
                 <span className="flex items-center gap-0.5">

@@ -1,9 +1,10 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
-import { Library, BookX, TriangleAlert } from "lucide-react";
+import Link from "next/link";
+import { Library, BookX, Search, TriangleAlert } from "lucide-react";
 
 import BookCard from "@/components/BookCard";
-import type { Book } from "@/lib/books";
+import { searchBooks, type Book } from "@/lib/books";
 import { getBooks } from "@/lib/books-api";
 
 export const metadata: Metadata = {
@@ -53,6 +54,29 @@ function EmptyState() {
   );
 }
 
+function NoResults({ query }: { query: string }) {
+  return (
+    <div className="flex flex-col items-center justify-center border border-dashed border-[#e9e4dc] bg-white px-6 py-16 text-center dark:border-white/10 dark:bg-[#1F1A33]">
+      <span className="flex size-14 items-center justify-center rounded-2xl bg-[#f4f1ea] text-[#183d32] dark:bg-white/5 dark:text-[#C4B5FD]">
+        <Search size={26} />
+      </span>
+      <h2 className="mt-4 text-lg font-bold text-[#19152B] dark:text-white">
+        No books found
+      </h2>
+      <p className="mt-1 max-w-md text-sm text-[#6B7280] dark:text-white/55">
+        Nothing on the shelves matches “{query}”. Try a different title, author,
+        or category.
+      </p>
+      <Link
+        href="/allbooks"
+        className="mt-5 rounded-full bg-[#183d32] px-5 py-2 text-xs font-bold tracking-wide text-white uppercase transition-colors hover:bg-[#0f2b23] dark:bg-[#276F4C] dark:hover:bg-[#22594a]"
+      >
+        Clear search
+      </Link>
+    </div>
+  );
+}
+
 function ErrorState({ message }: { message: string }) {
   return (
     <div className="flex flex-col items-center justify-center border border-[#f3d6d6] bg-[#fdf5f5] px-6 py-16 text-center dark:border-red-400/20 dark:bg-red-400/5">
@@ -72,12 +96,27 @@ function ErrorState({ message }: { message: string }) {
 
 /* ------------------------------------------------------------- book list */
 
-async function BookGrid() {
+type BooksSearchParams = {
+  q?: string | string[];
+};
+
+function readQuery(params?: BooksSearchParams): string {
+  const value = Array.isArray(params?.q) ? params?.q[0] : params?.q;
+  return (value ?? "").trim();
+}
+
+async function BookGrid({
+  searchParams,
+}: {
+  searchParams?: Promise<BooksSearchParams>;
+}) {
+  const query = readQuery(await searchParams);
   let books: Book[] = [];
   let error: string | null = null;
 
   try {
-    books = await getBooks();
+    const allBooks = await getBooks();
+    books = searchBooks(allBooks, query);
   } catch (cause) {
     error =
       cause instanceof Error
@@ -90,14 +129,27 @@ async function BookGrid() {
   }
 
   if (books.length === 0) {
-    return <EmptyState />;
+    return query ? <NoResults query={query} /> : <EmptyState />;
   }
 
   return (
-    <section aria-label="All books">
-      <p className="mb-4 text-sm font-medium text-[#6B7280] dark:text-white/55">
-        {books.length} {books.length === 1 ? "book" : "books"} on the shelf
-      </p>
+    <section aria-label={query ? `Search results for ${query}` : "All books"}>
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
+        <p className="text-sm font-medium text-[#6B7280] dark:text-white/55">
+          {query
+            ? `${books.length} ${books.length === 1 ? "result" : "results"} for “${query}”`
+            : `${books.length} ${books.length === 1 ? "book" : "books"} on the shelf`}
+        </p>
+
+        {query ? (
+          <Link
+            href="/allbooks"
+            className="text-xs font-bold tracking-wide text-[#183d32] uppercase transition-colors hover:text-[#276F4C] dark:text-[#9BE7B8] dark:hover:text-white"
+          >
+            Clear search
+          </Link>
+        ) : null}
+      </div>
 
       <div className="grid grid-cols-2 gap-4 sm:gap-5 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
         {books.map((book) => (
@@ -110,7 +162,11 @@ async function BookGrid() {
 
 /* ------------------------------------------------------------------ page */
 
-export default function AllBooksPage() {
+type AllBooksPageProps = {
+  searchParams?: Promise<BooksSearchParams>;
+};
+
+export default function AllBooksPage({ searchParams }: AllBooksPageProps) {
   return (
     <main className="min-h-screen bg-[#faf9f6] px-4 py-8 transition-colors sm:px-6 sm:py-10 lg:px-8 dark:bg-[#141126]">
       <div className="mx-auto w-full max-w-7xl">
@@ -131,7 +187,7 @@ export default function AllBooksPage() {
         </header>
 
         <Suspense fallback={<BookGridSkeleton />}>
-          <BookGrid />
+          <BookGrid searchParams={searchParams} />
         </Suspense>
       </div>
     </main>

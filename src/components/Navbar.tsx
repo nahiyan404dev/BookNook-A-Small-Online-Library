@@ -7,7 +7,6 @@ import { useState } from "react";
 import {
   BookOpen,
   Menu,
-  Search,
   UserRound,
   Library,
   Bookmark,
@@ -23,6 +22,8 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import ThemeToggle from "@/components/ThemeToggle";
+import NavbarSearch from "@/components/NavbarSearch";
+import { WiseIcon } from "@hugeicons/core-free-icons";
 
 const navLinks = [
   { name: "Home", href: "/", icon: BookOpen },
@@ -30,11 +31,12 @@ const navLinks = [
   { name: "Add New Book", href: "/Add_new_book", icon: BookPlus },
   { name: "My Books", href: "/my-books", icon: Bookmark },
   { name: "My Borrows", href: "/my-borrows", icon: History },
+  { name: "Wishlist", href: "/wishlist", icon: History },
 ];
 
 export default function Navbar() {
   const pathname = usePathname();
-  const [query, setQuery] = useState("");
+  const [menuOpen, setMenuOpen] = useState(false);
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-[#EAE7F2] bg-[#F5F4FA]/95 backdrop-blur-xl dark:border-white/10 dark:bg-[#19152B]/95">
@@ -57,20 +59,7 @@ export default function Navbar() {
          
 
         {/* Search (md and up) */}
-        <div className="relative ml-2 hidden md:block">
-          <Search
-            size={17}
-            className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400"
-          />
-          <input
-            type="search"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search books..."
-            aria-label="Search books"
-            className="h-10 w-48 rounded-full border border-[#dcd6cc] bg-white pl-10 pr-4 text-sm font-medium text-[#19152B] outline-none transition-all placeholder:text-gray-400 focus:w-64 xl:w-64 xl:focus:w-72 focus:border-[#5426B8] focus:ring-2 focus:ring-[#5426B8]/20 dark:border-white/10 dark:bg-white/5 dark:text-white dark:placeholder:text-white/40"
-          />
-        </div>
+        <NavbarSearch variant="desktop" />
 
         {/* Right Actions (all devices) */}
         <div className="flex-1" />
@@ -100,15 +89,18 @@ export default function Navbar() {
         </Link>
 
         {/* Sidebar Menu (all devices) */}
-        <Sheet>
-          <SheetTrigger >
-            <Button
-              variant="outline"
-              size="icon"
-              className="shrink-0 rounded-lg border-[#dcd6cc] text-[#5426B8] hover:border-[#5426B8] hover:bg-[#5426B8] hover:text-white"
-            >
-              <Menu size={22} />
-            </Button>
+        <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
+          <SheetTrigger
+            render={
+              <Button
+                variant="outline"
+                size="icon"
+                className="shrink-0 rounded-lg border-[#dcd6cc] text-[#5426B8] hover:border-[#5426B8] hover:bg-[#5426B8] hover:text-white"
+                aria-label="Open menu"
+              />
+            }
+          >
+            <Menu size={22} />
           </SheetTrigger>
 
           <SheetContent
@@ -146,6 +138,7 @@ export default function Navbar() {
                   <Link
                     key={link.name}
                     href={link.href}
+                    onClick={() => setMenuOpen(false)}
                     className={`flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold transition-all duration-200 dark:text-white/80 dark:hover:text-white ${
                       isActive
                         ? "text-[#3F3D56] hover:bg-[#EDE9FE] hover:text-[#5426B8]"
@@ -164,7 +157,7 @@ export default function Navbar() {
 
             {/* Auth Actions */}
             <div className="flex flex-col gap-3">
-              <Link href="/login">
+              <Link href="/login" onClick={() => setMenuOpen(false)}>
               <Button
                 variant="outline"
                 className="w-full rounded-xl border-[#dcd6cc] font-semibold text-[#19152B] hover:border-[#5426B8] hover:bg-[#EDE9FE] hover:text-[#5426B8] dark:border-white/10 dark:bg-white/5 dark:text-white dark:hover:border-[#8B5CF6] dark:hover:bg-white/10 dark:hover:text-white"
@@ -176,7 +169,7 @@ export default function Navbar() {
                 
               </Button>
               </Link>
-              <Link href="/register">
+              <Link href="/register" onClick={() => setMenuOpen(false)}>
               <Button
                 className="w-full rounded-xl bg-[#5426B8] font-semibold text-white hover:bg-[#451D96]"
                 
@@ -192,20 +185,7 @@ export default function Navbar() {
 
       {/* Search (below md — full-width row) */}
       <div className="px-4 pb-3 md:hidden">
-        <div className="relative">
-          <Search
-            size={17}
-            className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400"
-          />
-          <input
-            type="search"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search books..."
-            aria-label="Search books"
-            className="h-10 w-full rounded-full border border-[#dcd6cc] bg-white pl-10 pr-4 text-sm font-medium text-[#19152B] outline-none transition-all placeholder:text-gray-400 focus:border-[#5426B8] focus:ring-2 focus:ring-[#5426B8]/20 dark:border-white/10 dark:bg-white/5 dark:text-white dark:placeholder:text-white/40"
-          />
-        </div>
+        <NavbarSearch variant="mobile" />
       </div>
     </header>
   );

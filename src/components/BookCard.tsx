@@ -30,13 +30,13 @@ export default function BookCard({ book }: BookCardProps) {
   };
 
   return (
-    <article className="group flex flex-col overflow-hidden rounded-2xl border border-[#e9e4dc] bg-white p-3 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-[#183d32]/30 hover:shadow-lg hover:shadow-[#183d32]/10 dark:border-white/10 dark:bg-[#1F1A33] dark:hover:border-[#8B5CF6]/40">
-      {/* Cover — the love/favourite icon is intentionally never rendered */}
+    <article className="group flex flex-col overflow-hidden border border-[#e9e4dc] bg-white p-3 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-[#183d32]/30 hover:shadow-lg hover:shadow-[#183d32]/10 dark:border-white/10 dark:bg-[#1F1A33] dark:hover:border-[#8B5CF6]/40">
+      
       <Link href={detailsHref} aria-label={`View details for ${book.name}`}>
         <BookCover
           src={book.imageUrl}
           alt={`Cover of ${book.name}`}
-          className="aspect-3/4 rounded-xl"
+          className="aspect-3/4 "
           imgClassName="transition-transform duration-500 group-hover:scale-105"
         />
       </Link>

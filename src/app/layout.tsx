@@ -23,7 +23,6 @@ export const metadata: Metadata = {
   title: "BookNook— Read • Borrow • Explore",
   description:
     "Your cozy corner for tracking books, borrowing from the library, and discovering your next great read.",
-   
   
 };
 
