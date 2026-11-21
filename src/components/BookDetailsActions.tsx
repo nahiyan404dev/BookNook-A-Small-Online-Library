@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useSyncExternalStore } from "react";
 import {
   BookOpen,
   Bookmark,
@@ -10,43 +10,92 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 
+import type { Book } from "@/lib/books";
+import { borrowBook, formatDay, isBookBorrowed } from "@/lib/borrows";
+import { addMyBook, isBookSaved, removeMyBook } from "@/lib/my-books";
 import { cn } from "@/lib/utils";
 
+const LIBRARY_EVENT = "booknook:library-change";
+
+/** Same-tab notifications; the `storage` event covers other tabs. */
+function subscribeToLibrary(callback: () => void) {
+  window.addEventListener("storage", callback);
+  window.addEventListener(LIBRARY_EVENT, callback);
+
+  return () => {
+    window.removeEventListener("storage", callback);
+    window.removeEventListener(LIBRARY_EVENT, callback);
+  };
+}
+
+function notifyLibraryChange() {
+  window.dispatchEvent(new Event(LIBRARY_EVENT));
+}
+
 type BookDetailsActionsProps = {
-  name: string;
+  book: Book;
 };
 
-export default function BookDetailsActions({ name }: BookDetailsActionsProps) {
+export default function BookDetailsActions({ book }: BookDetailsActionsProps) {
   const [inCart, setInCart] = useState(false);
-  const [bookmarked, setBookmarked] = useState(false);
+
+  const borrowed = useSyncExternalStore(
+    subscribeToLibrary,
+    () => isBookBorrowed(book._id),
+    () => false
+  );
+
+  const saved = useSyncExternalStore(
+    subscribeToLibrary,
+    () => isBookSaved(book._id),
+    () => false
+  );
 
   const handleCart = () => {
     if (inCart) return;
 
     setInCart(true);
     toast.success("Added to your cart", {
-      description: `${name} is waiting for you at checkout.`,
+      description: `${book.name} is waiting for you at checkout.`,
     });
   };
 
   const handleBorrow = () => {
+    // One click = one loan. `borrowBook` also refuses duplicates, so a rapid
+    // double click can never add the same book twice.
+    const loan = borrowBook(book);
+
+    if (!loan) {
+      toast.info("Already on your borrows page", {
+        description: `"${book.name}" is already borrowed.`,
+      });
+      return;
+    }
+
+    notifyLibraryChange();
+
     toast.success("Borrow request placed", {
-      description: `We'll hold "${name}" for you at the front desk.`,
+      description: `Due ${formatDay(loan.dueAt)} — track it under My Borrows.`,
     });
   };
 
-  const handleBookmark = () => {
-    const next = !bookmarked;
-    setBookmarked(next);
+  const handleSave = () => {
+    if (isBookSaved(book._id)) {
+      removeMyBook(book._id);
+      notifyLibraryChange();
 
-    toast[next ? "success" : "info"](
-      next ? "Saved to bookmarks" : "Removed from bookmarks",
-      {
-        description: next
-          ? `Find ${name} later under Bookmarks.`
-          : `${name} is no longer in your saved books.`,
-      }
-    );
+      toast.info("Removed from My Books", {
+        description: `"${book.name}" is off your personal shelf.`,
+      });
+      return;
+    }
+
+    addMyBook(book._id);
+    notifyLibraryChange();
+
+    toast.success("Saved to My Books", {
+      description: `Find "${book.name}" under My Books.`,
+    });
   };
 
   return (
@@ -54,16 +103,22 @@ export default function BookDetailsActions({ name }: BookDetailsActionsProps) {
       <button
         type="button"
         onClick={handleBorrow}
-        className="flex h-12 flex-1 items-center justify-center gap-2 rounded-xl bg-[#183d32] px-6 text-sm font-bold tracking-wide text-white uppercase shadow-lg shadow-[#183d32]/20 transition-all hover:bg-[#0f2b23] hover:shadow-[#183d32]/30 active:translate-y-px sm:flex-none"
+        disabled={borrowed}
+        className={cn(
+          "flex h-12 flex-1 items-center justify-center gap-2 rounded-xl px-6 text-sm font-bold tracking-wide uppercase transition-all active:translate-y-px sm:flex-none",
+          borrowed
+            ? "cursor-not-allowed bg-[#183d32]/60 text-white/85 shadow-none dark:bg-[#276F4C]/50"
+            : "bg-[#183d32] text-white shadow-lg shadow-[#183d32]/20 hover:bg-[#0f2b23] hover:shadow-[#183d32]/30"
+        )}
       >
-        <BookOpen size={18} />
-        Borrow now
+        {borrowed ? <Check size={18} /> : <BookOpen size={18} />}
+        {borrowed ? "Borrowed" : "Borrow now"}
       </button>
 
       <button
         type="button"
         onClick={handleCart}
-        aria-label={inCart ? "Go to cart" : `Add ${name} to cart`}
+        aria-label={inCart ? "Go to cart" : `Add ${book.name} to cart`}
         className={cn(
           "flex h-12 flex-1 items-center justify-center gap-2 rounded-xl border px-6 text-sm font-bold tracking-wide uppercase transition-all active:translate-y-px sm:flex-none",
           inCart
@@ -77,17 +132,22 @@ export default function BookDetailsActions({ name }: BookDetailsActionsProps) {
 
       <button
         type="button"
-        onClick={handleBookmark}
-        aria-pressed={bookmarked}
-        aria-label={bookmarked ? "Remove from bookmarks" : "Save to bookmarks"}
+        onClick={handleSave}
+        aria-pressed={saved}
+        aria-label={
+          saved
+            ? `Remove ${book.name} from My Books`
+            : `Save ${book.name} to My Books`
+        }
+        title={saved ? "Saved to My Books" : "Save to My Books"}
         className={cn(
           "flex size-12 shrink-0 items-center justify-center rounded-xl border transition-colors",
-          bookmarked
+          saved
             ? "border-[#183d32]/20 bg-[#183d32] text-white hover:bg-[#0f2b23] dark:border-[#8B5CF6]/40 dark:bg-[#8B5CF6] dark:hover:bg-[#7C3AED]"
             : "border-[#e9e4dc] bg-white text-[#183d32] hover:border-[#183d32]/40 hover:bg-[#f2f0ea] dark:border-white/10 dark:bg-white/5 dark:text-white dark:hover:bg-white/10"
         )}
       >
-        {bookmarked ? <BookmarkCheck size={20} /> : <Bookmark size={20} />}
+        {saved ? <BookmarkCheck size={20} /> : <Bookmark size={20} />}
       </button>
     </div>
   );

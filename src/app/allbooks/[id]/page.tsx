@@ -326,7 +326,7 @@ export default async function BookDetailsPage({
               </div>
             </div>
 
-            <BookDetailsActions name={book.name} />
+            <BookDetailsActions book={book} />
 
             {/* Description */}
             <section className="mt-8">

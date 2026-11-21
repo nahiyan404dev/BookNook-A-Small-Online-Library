@@ -31,6 +31,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { addMyBook } from "@/lib/my-books";
 import { cn } from "@/lib/utils";
 
 
@@ -88,31 +89,16 @@ export default function AddBookPage() {
     e: React.FormEvent<HTMLFormElement>
   ) => {
     e.preventDefault();
-    setLoading(false);
-    const form = e.currentTarget;
-    const formData = new FormData(form);
-     
-
-    const res = await fetch('http://localhost:5000/add-books',{
-      method:'POST',
-      headers:{
-        'content-type': 'application/json',
-      },
-      body: JSON.stringify(draft),
-    });
-
-    const data = await res.json()
-    console.log(data);
-
-
 
     if (!category) {
       toast.error("Category is required", {
         description: "Please pick a category for this book.",
       });
-      setLoading(true);
       return;
     }
+
+    const form = e.currentTarget;
+    const formData = new FormData(form);
 
     const bookData = {
       name: formData.get("name"),
@@ -125,9 +111,27 @@ export default function AddBookPage() {
       rating: Number(formData.get("rating")),
     };
 
+    setLoading(true);
+
     try {
-      // TODO: replace with a real POST to /api/books once the backend exists.
-      await new Promise((resolve) => setTimeout(resolve, 900));
+      const res = await fetch("http://localhost:5000/add-books", {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+        },
+        body: JSON.stringify(bookData),
+      });
+
+      if (!res.ok) {
+        throw new Error(`The books service responded with ${res.status}.`);
+      }
+
+      const data = await res.json();
+
+      // Remember the new book in this browser so it shows up under My Books.
+      if (data?.insertedId) {
+        addMyBook(String(data.insertedId));
+      }
 
       toast.success("Book added successfully!", {
         description: `${bookData.name} has been added to your BookNook library.`,
@@ -143,8 +147,7 @@ export default function AddBookPage() {
             ? error.message
             : "Something went wrong. Please try again.",
       });
-       
-    }finally{
+    } finally {
       setLoading(false);
     }
   };

@@ -206,6 +206,34 @@ export function writeStoredLoans(loans: Loan[]): void {
   }
 }
 
+/** True when the book already has an active loan in this browser. */
+export function isBookBorrowed(bookId: string): boolean {
+  const loans = readStoredLoans();
+
+  return Boolean(
+    loans?.some((loan) => !loan.returnedAt && loan.book._id === bookId)
+  );
+}
+
+/**
+ * Adds a loan for the book to this browser's borrows list. Returns the created
+ * loan, or `null` when the book is already on loan — so repeated clicks can
+ * never create a duplicate.
+ */
+export function borrowBook(book: Book, now: Date = new Date()): Loan | null {
+  const stored = readStoredLoans() ?? [];
+
+  if (
+    stored.some((loan) => !loan.returnedAt && loan.book._id === book._id)
+  ) {
+    return null;
+  }
+
+  const loan = createLoan(book, now);
+  writeStoredLoans([loan, ...stored]);
+  return loan;
+}
+
 export type BorrowStore = {
   subscribe: (listener: () => void) => () => void;
   /** `null` until the browser store has hydrated (the skeleton state). */
