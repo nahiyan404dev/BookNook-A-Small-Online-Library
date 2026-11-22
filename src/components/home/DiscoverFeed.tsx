@@ -112,7 +112,7 @@ export default function DiscoverFeed({ books }: { books: Book[] }) {
                 className={cn(
                   "shrink-0 rounded-full border px-3.5 py-1.5 text-[11px] font-medium whitespace-nowrap transition-all duration-200 sm:text-xs",
                   active
-                    ? "border-transparent bg-[#183d32] font-semibold text-white dark:bg-[#276F4C] dark:text-white"
+                    ? "border-transparent bg-[#8B5CF6] font-semibold text-white dark:bg-[#8B5CF6] dark:text-white"
                     : "border-[#e9e4dc] bg-white text-[#3F3D56] hover:border-[#183d32]/30 hover:bg-[#faf9f6] hover:text-[#183d32] dark:border-white/10 dark:bg-white/[0.04] dark:text-white/70 dark:hover:border-white/25 dark:hover:bg-white/[0.08] dark:hover:text-white"
                 )}
               >
@@ -138,7 +138,7 @@ export default function DiscoverFeed({ books }: { books: Book[] }) {
 
             <Link
               href="/allbooks"
-              className="group inline-flex shrink-0 items-center gap-1 pb-0.5 text-[11px] font-semibold text-[#183d32] transition-colors hover:text-[#276F4C] sm:text-xs dark:text-[#9BE7B8] dark:hover:text-white"
+              className="group inline-flex shrink-0 items-center gap-1 pb-0.5 text-[11px] font-semibold text-[#8B5CF6] transition-colors hover:text-[#8B5CF6] sm:text-xs dark:text-[#9BE7B8] dark:hover:text-white"
             >
               View all
               <ArrowRight
@@ -157,7 +157,7 @@ export default function DiscoverFeed({ books }: { books: Book[] }) {
                 <Link
                   key={book._id}
                   href={`/allbooks/${book._id}`}
-                  className="group block rounded-lg focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#183d32] dark:focus-visible:outline-[#4ADE80]"
+                  className="group block rounded-lg focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#8B5CF6] dark:focus-visible:outline-[#8B5CF6]"
                 >
                   <div className="relative overflow-hidden rounded-lg ring-1 ring-black/[0.06] transition-transform duration-500 group-hover:-translate-y-1 sm:rounded-xl dark:ring-white/10">
                     <BookCover
@@ -209,7 +209,7 @@ export default function DiscoverFeed({ books }: { books: Book[] }) {
 
               <Link
                 href="/my-borrows"
-                className="group mt-4 inline-flex items-center gap-2 rounded-full bg-[#1F5B3E] px-4 py-2 text-[11px] font-semibold text-white transition-colors duration-300 hover:bg-[#276F4C] sm:text-xs"
+                className="group mt-4 inline-flex items-center gap-2 rounded-full bg-[#8B5CF6] px-4 py-2 text-[11px] font-semibold text-white transition-colors duration-300 hover:bg-[#8B5CF6] sm:text-xs"
               >
                 Start Reading
                 <ArrowRight
@@ -233,7 +233,7 @@ export default function DiscoverFeed({ books }: { books: Book[] }) {
                     key={item}
                     className="inline-flex items-center gap-1.5 rounded-full border border-[#e9e4dc] bg-[#faf9f6] px-3 py-1 text-[10.5px] font-medium text-[#4B5F56] dark:border-white/10 dark:bg-white/[0.03] dark:text-white/60"
                   >
-                    <span className="size-1 rounded-full bg-[#2E7D5B] dark:bg-[#4ADE80]" />
+                    <span className="size-1 rounded-full bg-[#8B5CF6] dark:bg-[#8B5CF6]" />
                     {item}
                   </li>
                 ))}
@@ -254,10 +254,10 @@ export default function DiscoverFeed({ books }: { books: Book[] }) {
   hover:-translate-y-0.5
   hover:border-[#183d32]/50
   hover:shadow-md hover:shadow-[#183d32]/10
-  dark:border-[#4ade80]/20
+  dark:border-[#8B5CF6]
    dark:from-[#17251F] dark:to-[#211832]
   dark:text-white
-  dark:hover:border-[#4ade80]/50
+  dark:hover:border-[#8B5CF6]
 "
           >
             <div>
@@ -269,7 +269,7 @@ export default function DiscoverFeed({ books }: { books: Book[] }) {
               </p>
             </div>
 
-            <span className="flex size-9 shrink-0 items-center justify-center rounded-full border border-[#d7e3da] text-[#183d32] transition-colors duration-300 group-hover:border-[#183d32] group-hover:bg-[#183d32] group-hover:text-white dark:border-white/15 dark:text-[#9BE7B8] dark:group-hover:border-[#4ADE80]/50 dark:group-hover:bg-[#4ADE80] dark:group-hover:text-[#07130C]">
+            <span className="flex size-9 shrink-0 items-center justify-center rounded-full border border-[#d7e3da] text-[#183d32] transition-colors duration-300 group-hover:border-[#183d32] group-hover:bg-[#183d32] group-hover:text-white dark:border-white/15 dark:text-[#8B5CF6] dark:group-hover:border-[#8B5CF6] dark:group-hover:bg-[#8B5CF6] dark:group-hover:text-[#07130C]">
               <ArrowUpRight size={16} />
             </span>
           </Link>

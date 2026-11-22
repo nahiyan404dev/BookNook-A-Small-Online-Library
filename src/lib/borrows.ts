@@ -247,7 +247,11 @@ export type BorrowStore = {
  * so local storage is read in `subscribe` (after mount) instead of during
  * render or inside an effect that calls setState.
  */
-export function createBorrowStore(books: Book[]): BorrowStore {
+export function createBorrowStore(
+  books: Book[],
+  options: { seed?: boolean } = {}
+): BorrowStore {
+  const shouldSeed = options.seed ?? true;
   let snapshot: Loan[] | null = null;
   let hydrated = false;
   const listeners = new Set<() => void>();
@@ -263,9 +267,9 @@ export function createBorrowStore(books: Book[]): BorrowStore {
     hydrated = true;
 
     const stored = readStoredLoans();
-    const initial = stored ?? createSeedLoans(books);
+    const initial = stored ?? (shouldSeed ? createSeedLoans(books) : []);
 
-    if (!stored) {
+    if (!stored && shouldSeed) {
       writeStoredLoans(initial);
     }
 

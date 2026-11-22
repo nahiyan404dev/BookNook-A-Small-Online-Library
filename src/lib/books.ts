@@ -7,6 +7,8 @@ export type Book = {
   price: number | string;
   duration?: number | string;
   description?: string;
+  /** Full or partial text, when the catalogue provides it. */
+  content?: string;
   rating: number | string;
   /** Optional compare-at price. Falls back to a display-only 20% off value. */
   originalPrice?: number;

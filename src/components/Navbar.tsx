@@ -14,6 +14,7 @@ import {
   Sparkles,
   BookPlus,
   Heart,
+  BookText,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -33,6 +34,7 @@ const navLinks = [
   { name: "My Books", href: "/my-books", icon: Bookmark },
   { name: "My Borrows", href: "/my-borrows", icon: History },
   { name: "Wishlist", href: "/wishlist", icon: Heart },
+  { name: "Read Books", href: "/read", icon: BookText },
 ];
 
 export default function Navbar() {

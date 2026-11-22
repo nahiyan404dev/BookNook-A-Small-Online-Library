@@ -17,40 +17,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
+import { Icon } from "@iconify/react";
 
-function GoogleIcon() {
-  return (
-    <svg viewBox="0 0 24 24" className="h-5 w-5" aria-hidden="true">
-      <path
-        fill="#4285F4"
-        d="M23.52 12.27c0-.85-.08-1.67-.22-2.45H12v4.64h6.46a5.52 5.52 0 0 1-2.4 3.62v3h3.88c2.27-2.09 3.58-5.17 3.58-8.81Z"
-      />
-      <path
-        fill="#34A853"
-        d="M12 24c3.24 0 5.96-1.07 7.94-2.91l-3.88-3.01c-1.08.72-2.45 1.15-4.06 1.15-3.12 0-5.77-2.11-6.71-4.95H1.29v3.11A11.99 11.99 0 0 0 12 24Z"
-      />
-      <path
-        fill="#FBBC05"
-        d="M5.29 14.28a7.2 7.2 0 0 1 0-4.56V6.61H1.29a12 12 0 0 0 0 10.78l4-3.11Z"
-      />
-      <path
-        fill="#EA4335"
-        d="M12 4.77c1.76 0 3.34.61 4.58 1.8l3.44-3.44A11.98 11.98 0 0 0 12 0 11.99 11.99 0 0 0 1.29 6.61l4 3.11C6.23 6.88 8.88 4.77 12 4.77Z"
-      />
-    </svg>
-  );
-}
-
-function GitHubIcon() {
-  return (
-    <svg viewBox="0 0 24 24" className="h-5 w-5" aria-hidden="true">
-      <path
-        fill="currentColor"
-        d="M12 .3a12 12 0 0 0-3.8 23.39c.6.11.82-.26.82-.58v-2.03c-3.34.73-4.04-1.61-4.04-1.61-.55-1.39-1.33-1.76-1.33-1.76-1.09-.75.08-.73.08-.73 1.2.08 1.84 1.24 1.84 1.24 1.07 1.83 2.81 1.3 3.5 1 .1-.78.42-1.31.76-1.61-2.66-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.13-.3-.54-1.52.11-3.18 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 0 1 6 0c2.29-1.55 3.3-1.23 3.3-1.23.65 1.66.24 2.88.12 3.18.77.84 1.23 1.91 1.23 3.22 0 4.61-2.81 5.63-5.49 5.92.43.38.82 1.11.82 2.24v3.32c0 .32.21.7.82.58A12 12 0 0 0 12 .3Z"
-      />
-    </svg>
-  );
-}
 
 const strengthSteps = [
   { label: "Too weak", color: "bg-[#C4B0F5]" },
@@ -115,32 +83,8 @@ export default function RegisterPage() {
 
           <CardContent>
             {/* Social */}
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-              <Button
-                type="button"
-                variant="outline"
-                className="h-11 gap-2.5 rounded-xl border-[#dcd6cc] bg-white font-semibold text-[#19152B] hover:border-[#5426B8]/50 hover:bg-[#F1EAFF]/50 hover:text-[#19152B]"
-              >
-                <GoogleIcon />
-                Google
-              </Button>
-              <Button
-                type="button"
-                variant="outline"
-                className="h-11 gap-2.5 rounded-xl border-[#dcd6cc] bg-white font-semibold text-[#19152B] hover:border-[#5426B8]/50 hover:bg-[#F1EAFF]/50 hover:text-[#19152B]"
-              >
-                <GitHubIcon />
-                GitHub
-              </Button>
-            </div>
 
-            <div className="my-6 flex items-center gap-3">
-              <Separator className="flex-1 bg-[#EAE7F2]" />
-              <span className="text-xs font-medium text-gray-400">
-                or sign up with email
-              </span>
-              <Separator className="flex-1 bg-[#EAE7F2]" />
-            </div>
+            
 
             <form
               className="space-y-4"
@@ -294,6 +238,23 @@ export default function RegisterPage() {
               >
                 Create Account
               </Button>
+              <div className="my-6 flex items-center gap-3">
+              <Separator className="flex-1 bg-[#EAE7F2]" />
+              <span className="text-xs font-medium text-gray-400">
+                or sign up with email
+              </span>
+              <Separator className="flex-1 bg-[#EAE7F2]" />
+            </div>
+              <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-2 ">
+                  <Button className="w-full" >
+                    <Icon icon="devicon:google" />
+                    Sign in with Google
+                  </Button>
+                  <Button className="w-full" >
+                    <Icon icon="mdi:github" />
+                    Sign in with GitHub
+                  </Button>
+              </div>
             </form>
           </CardContent>
 

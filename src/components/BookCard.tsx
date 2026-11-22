@@ -2,7 +2,7 @@
 
 import { useState, useSyncExternalStore } from "react";
 import Link from "next/link";
-import { ShoppingCart, Check, Heart } from "lucide-react";
+import { BookOpen, ShoppingCart, Check, Heart } from "lucide-react";
 import { toast } from "sonner";
 
 import BookCover from "@/components/BookCover";
@@ -137,23 +137,36 @@ export default function BookCard({ book }: BookCardProps) {
           ) : null}
         </div>
 
-        {/* Cart action */}
-        <button
-          type="button"
-          onClick={handleCart}
-          aria-label={
-            inCart ? `Go to cart for ${book.name}` : `Add ${book.name} to cart`
-          }
-          className={cn(
-            "mt-4 flex w-full items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-xs font-bold tracking-wide uppercase transition-colors duration-200",
-            inCart
-              ? "bg-[#EDE9FE] text-[#5426B8] hover:bg-[#E3DBFC] dark:bg-[#8B5CF6]/15 dark:text-[#C4B5FD] dark:hover:bg-[#8B5CF6]/25"
-              : "bg-[#183d32] text-white hover:bg-[#0f2b23] dark:bg-[#183d32] dark:hover:bg-[#22594a]"
-          )}
-        >
-          {inCart ? <Check size={15} /> : <ShoppingCart size={15} />}
-          {inCart ? "Go to cart" : "Add to cart"}
-        </button>
+        {/* Cart + read actions */}
+        <div className="mt-4 flex gap-2">
+          <button
+            type="button"
+            onClick={handleCart}
+            aria-label={
+              inCart
+                ? `Go to cart for ${book.name}`
+                : `Add ${book.name} to cart`
+            }
+            className={cn(
+              "flex flex-1 items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-xs font-bold tracking-wide uppercase transition-colors duration-200",
+              inCart
+                ? "bg-[#EDE9FE] text-[#5426B8] hover:bg-[#E3DBFC] dark:bg-[#8B5CF6]/15 dark:text-[#C4B5FD] dark:hover:bg-[#8B5CF6]/25"
+                : "bg-[#183d32] text-white hover:bg-[#0f2b23] dark:bg-[#183d32] dark:hover:bg-[#22594a]"
+            )}
+          >
+            {inCart ? <Check size={15} /> : <ShoppingCart size={15} />}
+            {inCart ? "Go to cart" : "Add to cart"}
+          </button>
+
+          <Link
+            href={`/read/${book._id}`}
+            aria-label={`Read ${book.name}`}
+            title="Read a sample"
+            className="flex w-10 shrink-0 items-center justify-center self-stretch rounded-lg border border-[#e9e4dc] bg-white text-[#183d32] transition-colors hover:border-[#183d32] hover:bg-[#f2f0ea] dark:border-white/10 dark:bg-white/5 dark:text-white/70 dark:hover:border-[#8B5CF6]/40 dark:hover:bg-white/10 dark:hover:text-white"
+          >
+            <BookOpen size={15} aria-hidden="true" />
+          </Link>
+        </div>
       </div>
     </article>
   );

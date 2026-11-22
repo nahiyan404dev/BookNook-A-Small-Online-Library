@@ -22,6 +22,7 @@ import { toast } from "sonner";
 
 import BookCover from "@/components/BookCover";
 import { BorrowsBodySkeleton } from "@/components/borrows/BorrowsSkeleton";
+import ReadingProgressBar from "@/components/reading/ReadingProgressBar";
 import type { Book } from "@/lib/books";
 import {
   createBorrowStore,
@@ -32,6 +33,13 @@ import {
   LOAN_DAYS,
   type Loan,
 } from "@/lib/borrows";
+import {
+  createReadingStore,
+  readingActionLabel,
+  readingPercent,
+  readingStatusLabel,
+  type ReadingProgress,
+} from "@/lib/reading";
 import { cn } from "@/lib/utils";
 
 type BorrowsViewProps = {
@@ -132,12 +140,15 @@ function LoanStatusBadge({ loan }: { loan: Loan }) {
 
 function LoanRow({
   loan,
+  progress,
   onReturn,
 }: {
   loan: Loan;
+  progress: ReadingProgress | null;
   onReturn: (loan: Loan) => void;
 }) {
   const status = loanStatus(loan);
+  const percent = readingPercent(progress);
 
   return (
     <li className="p-4 sm:p-5">
@@ -194,6 +205,19 @@ function LoanRow({
             </div>
           </dl>
 
+          <div className="mt-2.5 flex items-center gap-2.5">
+            <ReadingProgressBar
+              value={percent}
+              label={`Reading progress for ${loan.book.name}`}
+              className="max-w-[180px] flex-1"
+            />
+            <span className="shrink-0 text-[10.5px] font-semibold text-[#6B5B95] tabular-nums dark:text-white/50">
+              {progress
+                ? `${readingStatusLabel(progress)} · p. ${progress.page}/${progress.totalPages}`
+                : "Not started"}
+            </span>
+          </div>
+
           <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
             <p
               className={cn(
@@ -205,14 +229,25 @@ function LoanRow({
               {dueLabel(loan)}
             </p>
 
-            <button
-              type="button"
-              onClick={() => onReturn(loan)}
-              className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-[#E4DFF2] bg-white px-3 text-xs font-semibold text-[#5426B8] transition-colors hover:border-[#5426B8] hover:bg-[#F1EAFF] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8B5CF6] dark:border-white/10 dark:bg-white/5 dark:text-[#C4B5FD] dark:hover:border-[#8B5CF6]/50 dark:hover:bg-[#8B5CF6]/15"
-            >
-              <RotateCcw size={14} aria-hidden="true" />
-              Return
-            </button>
+            <div className="flex items-center gap-2">
+              <Link
+                href={`/read/${loan.book._id}`}
+                aria-label={`${readingActionLabel(progress)} ${loan.book.name}`}
+                className="inline-flex h-8 items-center gap-1.5 rounded-lg bg-[#5426B8] px-3 text-xs font-semibold text-white transition-colors hover:bg-[#451D96] focus-visible:ring-2 focus-visible:ring-[#8B5CF6] focus-visible:outline-none"
+              >
+                <BookOpen size={14} aria-hidden="true" />
+                {readingActionLabel(progress)}
+              </Link>
+
+              <button
+                type="button"
+                onClick={() => onReturn(loan)}
+                className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-[#E4DFF2] bg-white px-3 text-xs font-semibold text-[#5426B8] transition-colors hover:border-[#5426B8] hover:bg-[#F1EAFF] focus-visible:ring-2 focus-visible:ring-[#8B5CF6] focus-visible:outline-none dark:border-white/10 dark:bg-white/5 dark:text-[#C4B5FD] dark:hover:border-[#8B5CF6]/50 dark:hover:bg-[#8B5CF6]/15"
+              >
+                <RotateCcw size={14} aria-hidden="true" />
+                Return
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -220,7 +255,15 @@ function LoanRow({
   );
 }
 
-function HistoryRow({ loan }: { loan: Loan }) {
+function HistoryRow({
+  loan,
+  progress,
+}: {
+  loan: Loan;
+  progress: ReadingProgress | null;
+}) {
+  const percent = readingPercent(progress);
+
   return (
     <li className="flex gap-3 p-4 sm:gap-4 sm:p-5">
       <Link
@@ -268,6 +311,27 @@ function HistoryRow({ loan }: { loan: Loan }) {
             Returned {loan.returnedAt ? formatDay(loan.returnedAt) : "—"}
           </span>
         </p>
+
+        <div className="mt-2.5 flex flex-wrap items-center gap-x-3 gap-y-1.5">
+          <span className="flex min-w-[140px] flex-1 items-center gap-2">
+            <ReadingProgressBar
+              value={percent}
+              label={`Reading progress for ${loan.book.name}`}
+              className="max-w-[140px] flex-1"
+            />
+            <span className="shrink-0 text-[10.5px] font-semibold text-[#6B5B95] dark:text-white/50">
+              {readingStatusLabel(progress)}
+            </span>
+          </span>
+
+          <Link
+            href={`/read/${loan.book._id}`}
+            className="inline-flex items-center gap-0.5 text-[11px] font-semibold text-[#5426B8] transition-colors hover:text-[#451D96] dark:text-[#C4B5FD] dark:hover:text-white"
+          >
+            {readingActionLabel(progress)}
+            <ChevronRight size={12} aria-hidden="true" />
+          </Link>
+        </div>
       </div>
     </li>
   );
@@ -328,11 +392,22 @@ export default function BorrowsView({
     borrowStore.getServerSnapshot
   );
 
+  const [readingStore] = useState(() => createReadingStore());
+  const readingRecords = useSyncExternalStore(
+    readingStore.subscribe,
+    readingStore.getSnapshot,
+    readingStore.getServerSnapshot
+  );
+
   const [tab, setTab] = useState<Tab>("active");
   const [query, setQuery] = useState("");
 
   const ready = storedLoans !== null;
   const loans = storedLoans ?? [];
+
+  const progressByBook = new Map(
+    (readingRecords ?? []).map((record) => [record.bookId, record])
+  );
 
   const handleBorrow = (book: Book) => {
     if (
@@ -608,6 +683,7 @@ export default function BorrowsView({
                         <LoanRow
                           key={loan.id}
                           loan={loan}
+                          progress={progressByBook.get(loan.book._id) ?? null}
                           onReturn={handleReturn}
                         />
                       ))}
@@ -629,7 +705,11 @@ export default function BorrowsView({
                     className="divide-y divide-[#F1EEF8] dark:divide-white/[0.06]"
                   >
                     {historyLoans.map((loan) => (
-                      <HistoryRow key={loan.id} loan={loan} />
+                      <HistoryRow
+                        key={loan.id}
+                        loan={loan}
+                        progress={progressByBook.get(loan.book._id) ?? null}
+                      />
                     ))}
                   </ul>
                 ) : (

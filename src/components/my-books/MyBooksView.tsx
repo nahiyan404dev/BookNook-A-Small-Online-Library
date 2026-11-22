@@ -6,8 +6,8 @@ import {
   ArrowLeft,
   BookOpen,
   Bookmark,
-  CalendarPlus,
-  ChevronRight,
+  CheckCircle2,
+  Eye,
   Library,
   Plus,
   Search,
@@ -21,6 +21,7 @@ import { toast } from "sonner";
 
 import BookCover from "@/components/BookCover";
 import { MyBooksBodySkeleton } from "@/components/my-books/MyBooksSkeleton";
+import ReadingProgressBar from "@/components/reading/ReadingProgressBar";
 import {
   formatPrice,
   matchesSearch,
@@ -28,6 +29,13 @@ import {
   type Book,
 } from "@/lib/books";
 import { createMyBooksStore, type OwnedBook } from "@/lib/my-books";
+import {
+  createReadingStore,
+  readingActionLabel,
+  readingPercent,
+  readingStatusLabel,
+  type ReadingProgress,
+} from "@/lib/reading";
 import { cn } from "@/lib/utils";
 
 type MyBooksViewProps = {
@@ -88,13 +96,16 @@ function StatCard({
 
 function OwnedBookCard({
   book,
+  progress,
   onRemove,
 }: {
   book: Book;
+  progress: ReadingProgress | null;
   onRemove: (book: Book) => void;
 }) {
   const rating = Number(book.rating);
   const detailsHref = `/allbooks/${book._id}`;
+  const percent = readingPercent(progress);
 
   return (
     <article className="group flex flex-col overflow-hidden border border-[#EAE7F2] bg-white p-3 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-[#5426B8]/30 hover:shadow-lg hover:shadow-[#5426B8]/10 dark:border-white/10 dark:bg-[#1F1A33] dark:hover:border-[#8B5CF6]/40">
@@ -143,13 +154,57 @@ function OwnedBookCard({
           ) : null}
         </div>
 
+        <div className="mt-3">
+          <div className="flex items-center justify-between gap-2 text-[10.5px] font-semibold">
+            <span
+              className={cn(
+                "inline-flex items-center gap-1",
+                progress?.completedAt
+                  ? "text-[#1F7A4D] dark:text-emerald-300"
+                  : percent > 0
+                    ? "text-[#5426B8] dark:text-[#C4B5FD]"
+                    : "text-[#8B87A0] dark:text-white/40"
+              )}
+            >
+              {progress?.completedAt ? (
+                <CheckCircle2 size={12} aria-hidden="true" />
+              ) : (
+                <BookOpen size={12} aria-hidden="true" />
+              )}
+              {readingStatusLabel(progress)}
+            </span>
+
+            {progress ? (
+              <span className="shrink-0 text-[#8B87A0] tabular-nums dark:text-white/40">
+                p. {progress.page}/{progress.totalPages}
+              </span>
+            ) : null}
+          </div>
+
+          <ReadingProgressBar
+            value={percent}
+            label={`Reading progress for ${book.name}`}
+            className="mt-1.5"
+          />
+        </div>
+
         <div className="mt-3 flex gap-2">
           <Link
-            href={detailsHref}
+            href={`/read/${book._id}`}
+            aria-label={`${readingActionLabel(progress)} ${book.name}`}
             className="flex flex-1 items-center justify-center gap-1.5 rounded-lg bg-[#5426B8] px-3 py-2 text-xs font-bold tracking-wide text-white uppercase transition-colors hover:bg-[#451D96]"
           >
-            View
-            <ChevronRight size={14} aria-hidden="true" />
+            <BookOpen size={14} aria-hidden="true" />
+            {readingActionLabel(progress)}
+          </Link>
+
+          <Link
+            href={detailsHref}
+            aria-label={`View details for ${book.name}`}
+            title="View details"
+            className="flex size-9 shrink-0 items-center justify-center rounded-lg border border-[#E4DFF2] text-[#6B7280] transition-colors hover:border-[#5426B8]/40 hover:bg-[#F1EAFF] hover:text-[#5426B8] dark:border-white/10 dark:text-white/50 dark:hover:border-[#8B5CF6]/40 dark:hover:bg-[#8B5CF6]/15 dark:hover:text-[#C4B5FD]"
+          >
+            <Eye size={15} aria-hidden="true" />
           </Link>
 
           <button
@@ -262,11 +317,22 @@ export default function MyBooksView({
     store.getServerSnapshot
   );
 
+  const [readingStore] = useState(() => createReadingStore());
+  const readingRecords = useSyncExternalStore(
+    readingStore.subscribe,
+    readingStore.getSnapshot,
+    readingStore.getServerSnapshot
+  );
+
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState("All");
 
   const ready = stored !== null;
   const entries = stored ?? [];
+
+  const progressByBook = new Map(
+    (readingRecords ?? []).map((record) => [record.bookId, record])
+  );
 
   const bookById = new Map(books.map((book) => [book._id, book]));
 
@@ -297,15 +363,10 @@ export default function MyBooksView({
       ? ratings.reduce((total, rating) => total + rating, 0) / ratings.length
       : null;
 
-  const now = new Date();
-  const addedThisMonth = library.filter(({ entry }) => {
-    const date = new Date(entry.addedAt);
+  const readingNow = library.filter(({ book }) => {
+    const progress = progressByBook.get(book._id);
 
-    return (
-      !Number.isNaN(date.getTime()) &&
-      date.getMonth() === now.getMonth() &&
-      date.getFullYear() === now.getFullYear()
-    );
+    return Boolean(progress && progress.page > 1 && !progress.completedAt);
   }).length;
 
   const handleRemove = (book: Book) => {
@@ -402,10 +463,10 @@ export default function MyBooksView({
                 tone="amber"
               />
               <StatCard
-                icon={<CalendarPlus size={17} aria-hidden="true" />}
-                label="This month"
-                value={addedThisMonth}
-                hint="Recently added"
+                icon={<Bookmark size={17} aria-hidden="true" />}
+                label="Reading now"
+                value={readingNow}
+                hint="Continue where you left off"
                 tone="purple"
               />
             </div>
@@ -492,6 +553,7 @@ export default function MyBooksView({
                     <OwnedBookCard
                       key={book._id}
                       book={book}
+                      progress={progressByBook.get(book._id) ?? null}
                       onRemove={handleRemove}
                     />
                   ))}
