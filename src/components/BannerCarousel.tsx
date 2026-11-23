@@ -532,7 +532,7 @@ export default function BannerCarousel() {
         onPointerLeave={resetParallax}
         onFocus={() => setPaused(true)}
         onBlur={() => setPaused(false)}
-        className="@container relative isolate min-h-[36rem] overflow-hidden rounded-[1.75rem] bg-[#EDEAE1] ring-1 ring-black/[0.06] shadow-[0_40px_100px_-60px_rgba(24,61,50,0.55)] md:rounded-[2.25rem] lg:h-[clamp(31rem,40vw,38rem)] lg:min-h-0 dark:bg-[#171324] dark:ring-white/10"
+        className="@container relative isolate min-h-[36rem] overflow-hidden rounded-[1.75rem] bg-[#EDEAE1] md:rounded-[2.25rem] lg:h-[clamp(31rem,40vw,38rem)] lg:min-h-0 dark:bg-[#171324] dark:ring-white/10"
       >
         {/* backdrop */}
         <div

@@ -1,278 +1,390 @@
+
 "use client";
 
+import React, { useState } from "react";
 import Link from "next/link";
-import { useMemo, useState } from "react";
-import { BookOpen, Eye, EyeOff, Lock, Mail, Sparkles, UserRound } from "lucide-react";
+import {
+  UserRound,
+  Mail,
+  LockKeyhole,
+  Camera,
+  Eye,
+  EyeOff,
+  Check,
+  X,
+  BookOpen,
+  Sparkles,
+} from "lucide-react";
+import {Icon} from "@iconify/react";
 
 import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Field,
+  FieldDescription,
+  FieldGroup,
+  FieldLabel,
+  FieldSeparator,
+} from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { authClient } from "@/lib/auth-client";
+import { redirect } from "next/navigation";
+ 
+import { toast } from "sonner";
 import { Separator } from "@/components/ui/separator";
-import { Icon } from "@iconify/react";
+import AuthAside from "@/components/auth/AuthAside";
 
 
-const strengthSteps = [
-  { label: "Too weak", color: "bg-[#C4B0F5]" },
-  { label: "Weak", color: "bg-[#8B5CF6]" },
-  { label: "Good", color: "bg-[#5426B8]" },
-  { label: "Strong", color: "bg-[#451D96]" },
-];
 
-function passwordScore(password: string) {
-  let score = 0;
-  if (password.length >= 8) score++;
-  if (/[a-z]/.test(password) && /[A-Z]/.test(password)) score++;
-  if (/\d/.test(password)) score++;
-  if (/[^A-Za-z0-9]/.test(password)) score++;
-  return score;
-}
 
-export default function RegisterPage() {
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+export default function SignUpPage() {
+
+  const handleEmailSignUp =async(e:React.SubmitEvent<HTMLElement>)=>{
+    e.preventDefault();
+    const formData= new FormData(e.target);
+    const user= Object.fromEntries(formData.entries()) as {name:string, image?:string, email:string, password:string};
+     
+    const {data, error}= await authClient.signUp.email({
+        ...user,
+    });
+    if(data){
+       toast.success("Account Created Successfully!",{ 
+      description: "Welcome to BookNook! Your account has been create successfully.",
+    });
+      redirect('/')
+    }
+    if(error){
+      toast.error
+      ("Registration Failed!",{ 
+      description: error.message,
+      
+    });
+    }
+  }
+
+
   const [showPassword, setShowPassword] = useState(false);
-  const [agreed, setAgreed] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
 
-  const score = useMemo(() => passwordScore(password), [password]);
-  const step = score > 0 ? strengthSteps[score - 1] : null;
+  const passwordRules = [
+    {
+      label: "At least 8 characters",
+      valid: password.length >= 8,
+    },
+    {
+      label: "One uppercase letter",
+      valid: /[A-Z]/.test(password),
+    },
+    {
+      label: "One lowercase letter",
+      valid: /[a-z]/.test(password),
+    },
+    {
+      label: "One number",
+      valid: /[0-9]/.test(password),
+    },
+    {
+      label: "One special character",
+      valid: /[^A-Za-z0-9]/.test(password),
+    },
+  ];
+
+  const isPasswordValid = passwordRules.every((rule) => rule.valid);
+  const isConfirmPasswordValid =
+    confirmPassword.length > 0 && password === confirmPassword;
 
   return (
-    <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-gradient-to-br from-[#5426B8] via-[#451D96] to-[#2E1266] px-4 py-10">
-      {/* Decorative background shapes */}
-      <BookOpen size={340} className="absolute -left-24 -top-20 text-white/5" />
-      <Sparkles size={220} className="absolute -right-16 top-24 text-white/5" />
-      <BookOpen size={260} className="absolute -bottom-20 right-24 text-white/5" />
-      <div className="absolute -bottom-32 -left-32 h-96 w-96 rounded-full bg-[#8B5CF6]/20 blur-3xl" />
-      <div className="absolute -right-24 top-1/3 h-80 w-80 rounded-full bg-[#C4B0F5]/10 blur-3xl" />
+    <div className="min-h-screen flex bg-[#F5F4FA] dark:bg-black">
+      <AuthAside />
+      <main className="flex flex-1 items-center justify-center px-4 py-10 sm:px-8">
+      <div className="w-full max-w-md">
 
-      <div className="relative w-full max-w-lg">
-        {/* Logo */}
-        <Link href="/" className="mb-6 flex flex-col items-center gap-1">
-          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/15 text-white backdrop-blur">
-            <BookOpen size={28} strokeWidth={2.2} />
+        {/* Brand */}
+        <div className="mb-6 text-center">
+          <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#451D96] text-white shadow-lg shadow-purple-200">
+            <BookOpen size={28} />
           </div>
-          <h1 className="text-2xl font-bold tracking-tight text-white">
-            Book<span className="text-[#C4B0F5]">Nook</span>
-          </h1>
-          <p className="text-[10px] font-semibold tracking-[2.5px] text-white/60">
-            READ • BORROW • EXPLORE
-          </p>
-        </Link>
 
-        {/* Card */}
-        <Card className="rounded-3xl border-white/60 bg-white/95 shadow-2xl shadow-black/20 backdrop-blur">
-          <CardHeader>
-            <CardTitle className="text-2xl font-bold text-[#19152B]">
-              Create your account
-            </CardTitle>
-            <CardDescription>
-              Join the nook — borrow, read, and grow.
+          <h1 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white">
+            BookNook
+          </h1>
+
+          <p className="mt-1 text-sm text-gray-500">
+            Your next favorite book starts here.
+          </p>
+        </div>
+
+        <Card className="border border-purple-100/80 bg-white dark:bg-black shadow-xl shadow-purple-100/50 rounded-2xl">
+
+          <CardHeader className="space-y-2 text-center pb-5">
+            <div className="flex items-center justify-center gap-2">
+              <Sparkles size={18} className="text-[#5426B8]" />
+              <CardTitle className="text-2xl font-bold text-gray-900 dark:text-[#5426B8]">
+                Create an account
+              </CardTitle>
+            </div>
+
+            <CardDescription className="text-gray-500">
+              Join BookNook and discover your next great read.
             </CardDescription>
           </CardHeader>
 
           <CardContent>
-            {/* Social */}
+            <form className="space-y-5" onSubmit={handleEmailSignUp}>
 
-            
+              <FieldGroup className="gap-4">
 
-            <form
-              className="space-y-4"
-              action="/"
-              onSubmit={(e) => {
-                if (!agreed) e.preventDefault();
-              }}
-            >
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                <div className="grid gap-1.5">
-                  <Label htmlFor="first-name" className="font-semibold text-[#19152B]">
-                    First name
-                  </Label>
-                  <div className="relative">
-                    <UserRound
-                      size={17}
-                      className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400"
-                    />
-                    <Input
-                      id="first-name"
-                      type="text"
-                      required
-                      value={firstName}
-                      onChange={(e) => setFirstName(e.target.value)}
-                      placeholder="Jane"
-                      className="h-11 rounded-xl border-[#dcd6cc] bg-white pl-10 pr-4 text-sm text-[#19152B] placeholder:text-gray-400 focus-visible:border-[#5426B8] focus-visible:ring-[#5426B8]/20"
-                    />
-                  </div>
-                </div>
+                {/* Full Name */}
+                <Field>
+                  <FieldLabel htmlFor="name">
+                    <UserRound size={16} />
+                    Full Name
+                  </FieldLabel>
 
-                <div className="grid gap-1.5">
-                  <Label htmlFor="last-name" className="font-semibold text-[#19152B]">
-                    Last name
-                  </Label>
-                  <div className="relative">
-                    <UserRound
-                      size={17}
-                      className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400"
-                    />
-                    <Input
-                      id="last-name"
-                      type="text"
-                      required
-                      value={lastName}
-                      onChange={(e) => setLastName(e.target.value)}
-                      placeholder="Doe"
-                      className="h-11 rounded-xl border-[#dcd6cc] bg-white pl-10 pr-4 text-sm text-[#19152B] placeholder:text-gray-400 focus-visible:border-[#5426B8] focus-visible:ring-[#5426B8]/20"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <div className="grid gap-1.5">
-                <Label htmlFor="email" className="font-semibold text-[#19152B]">
-                  Email
-                </Label>
-                <div className="relative">
-                  <Mail
-                    size={17}
-                    className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400"
+                  <Input
+                    id="name"
+                    name="name"
+                    type="text"
+                    placeholder="Enter your full name"
+                    className="h-11 rounded-xl focus-visible:ring-[#5426B8]"
+                    autoComplete="name"
+                    required
                   />
+                </Field>
+
+                {/* Profile Image */}
+                <Field>
+                  <FieldLabel htmlFor="image">
+                    <Camera size={16} />
+                    Profile Image URL
+                  </FieldLabel>
+
+                  <Input
+                    id="image"
+                    name="image"
+                    type="url"
+                    placeholder="https://example.com/image.jpg"
+                    className="h-11 rounded-xl focus-visible:ring-[#5426B8]"
+                    required
+                  />
+                </Field>
+
+                {/* Email */}
+                <Field>
+                  <FieldLabel htmlFor="email">
+                    <Mail size={16} />
+                    Email Address
+                  </FieldLabel>
+
                   <Input
                     id="email"
+                    name="email"
                     type="email"
+                    placeholder="name@example.com"
+                    className="h-11 rounded-xl focus-visible:ring-[#5426B8]"
+                    autoComplete="email"
                     required
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="you@example.com"
-                    className="h-11 rounded-xl border-[#dcd6cc] bg-white pl-10 pr-4 text-sm text-[#19152B] placeholder:text-gray-400 focus-visible:border-[#5426B8] focus-visible:ring-[#5426B8]/20"
                   />
-                </div>
-              </div>
+                </Field>
 
-              <div className="grid gap-1.5">
-                <Label htmlFor="password" className="font-semibold text-[#19152B]">
-                  Password
-                </Label>
-                <div className="relative">
-                  <Lock
-                    size={17}
-                    className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400"
-                  />
-                  <Input
-                    id="password"
-                    type={showPassword ? "text" : "password"}
-                    required
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="Min. 8 characters"
-                    className="h-11 rounded-xl border-[#dcd6cc] bg-white pl-10 pr-11 text-sm text-[#19152B] placeholder:text-gray-400 focus-visible:border-[#5426B8] focus-visible:ring-[#5426B8]/20"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    aria-label={showPassword ? "Hide password" : "Show password"}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 transition-colors hover:text-[#5426B8]"
-                  >
-                    {showPassword ? <EyeOff size={17} /> : <Eye size={17} />}
-                  </button>
-                </div>
+                {/* Password */}
+                <Field>
+                  <FieldLabel htmlFor="password">
+                    <LockKeyhole size={16} />
+                    Password
+                  </FieldLabel>
 
-                {/* Strength meter */}
-                {step && (
-                  <div className="mt-2">
-                    <div className="flex gap-1.5">
-                      {strengthSteps.map((s, i) => (
+                  <div className="relative">
+                    <Input
+                      id="password"
+                      name="password"
+                      type={showPassword ? "text" : "password"}
+                      placeholder="Create a strong password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      className="h-11 rounded-xl pr-12 focus-visible:ring-[#5426B8]"
+                      autoComplete="new-password"
+                      required
+                    />
+
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-[#5426B8]"
+                      aria-label={showPassword ? "Hide password" : "Show password"}
+                    >
+                      {showPassword ? (
+                        <EyeOff size={19} />
+                      ) : (
+                        <Eye size={19} />
+                      )}
+                    </button>
+                  </div>
+
+                  {/* Password Validation */}
+                  {password.length > 0 && (
+                    <div className="mt-3 rounded-xl bg-gray-50 p-3 space-y-2">
+                      <p className="text-xs font-semibold text-gray-700">
+                        Password requirements
+                      </p>
+
+                      {passwordRules.map((rule) => (
                         <div
-                          key={s.label}
-                          className={`h-1.5 flex-1 rounded-full transition-colors ${
-                            i < score ? s.color : "bg-[#EAE7F2]"
-                          }`}
-                        />
+                          key={rule.label}
+                          className="flex items-center gap-2 text-xs"
+                        >
+                          {rule.valid ? (
+                            <Check size={14} className="text-green-600" />
+                          ) : (
+                            <X size={14} className="text-gray-400" />
+                          )}
+
+                          <span
+                            className={
+                              rule.valid
+                                ? "text-green-600"
+                                : "text-gray-500"
+                            }
+                          >
+                            {rule.label}
+                          </span>
+                        </div>
                       ))}
                     </div>
-                    <p className="mt-1 text-xs font-medium text-gray-500">
-                      Strength:{" "}
-                      <span className="font-semibold text-[#19152B]">
-                        {step.label}
-                      </span>
-                    </p>
+                  )}
+                </Field>
+
+                {/* Confirm Password */}
+                <Field>
+                  <FieldLabel htmlFor="confirmPassword">
+                    <LockKeyhole size={16} />
+                    Confirm Password
+                  </FieldLabel>
+
+                  <div className="relative">
+                    <Input
+                      id="confirmPassword"
+                      name="confirmPassword"
+                      type={showConfirmPassword ? "text" : "password"}
+                      placeholder="Confirm your password"
+                      value={confirmPassword}
+                      onChange={(e) =>
+                        setConfirmPassword(e.target.value)
+                      }
+                      className="h-11 rounded-xl pr-12 focus-visible:ring-[#5426B8]"
+                      autoComplete="new-password"
+                      required
+                    />
+
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setShowConfirmPassword(!showConfirmPassword)
+                      }
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-[#5426B8]"
+                      aria-label={
+                        showConfirmPassword
+                          ? "Hide password"
+                          : "Show password"
+                      }
+                    >
+                      {showConfirmPassword ? (
+                        <EyeOff size={19} />
+                      ) : (
+                        <Eye size={19} />
+                      )}
+                    </button>
                   </div>
-                )}
-              </div>
 
-              {/* Terms */}
-              <div className="flex items-start gap-2.5">
-                <Checkbox
-                  id="terms"
-                  checked={agreed}
-                  onCheckedChange={(checked) => setAgreed(checked === true)}
-                  className="mt-0.5 border-[#dcd6cc] bg-white data-checked:border-[#5426B8] data-checked:bg-[#5426B8]"
-                />
-                <Label
-                  htmlFor="terms"
-                  className="font-normal text-sm leading-relaxed text-gray-500"
-                >
-                  I agree to the{" "}
-                  <Link href="/terms" className="font-semibold text-[#5426B8] hover:underline">
-                    Terms of Service
-                  </Link>{" "}
-                  and{" "}
-                  <Link href="/privacy" className="font-semibold text-[#5426B8] hover:underline">
-                    Privacy Policy
-                  </Link>
-                </Label>
-              </div>
+                  {confirmPassword.length > 0 && (
+                    <p
+                      className={`mt-1 text-xs ${
+                        isConfirmPasswordValid
+                          ? "text-green-600"
+                          : "text-red-500"
+                      }`}
+                    >
+                      {isConfirmPasswordValid
+                        ? "Passwords match!"
+                        : "Passwords do not match."}
+                    </p>
+                  )}
+                </Field>
 
+              </FieldGroup>
+
+              {/* Submit */}
               <Button
                 type="submit"
-                className="h-11 w-full rounded-xl bg-[#5426B8] font-semibold text-white shadow-md shadow-purple-300/50 hover:bg-[#451D96] hover:text-white"
+                disabled={!isPasswordValid || !isConfirmPasswordValid}
+                className="h-12 w-full rounded-xl bg-[#451D96] text-base font-semibold text-white shadow-md shadow-purple-200 transition-all hover:bg-[#5426B8] disabled:opacity-50"
               >
                 Create Account
               </Button>
-              <div className="my-6 flex items-center gap-3">
-              <Separator className="flex-1 bg-[#EAE7F2]" />
-              <span className="text-xs font-medium text-gray-400">
-                or sign up with email
-              </span>
-              <Separator className="flex-1 bg-[#EAE7F2]" />
-            </div>
-              <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-2 ">
-                  <Button className="w-full" >
-                    <Icon icon="devicon:google" />
-                    Sign in with Google
-                  </Button>
-                  <Button className="w-full" >
-                    <Icon icon="mdi:github" />
-                    Sign in with GitHub
-                  </Button>
-              </div>
-            </form>
-          </CardContent>
 
-          <CardFooter className="justify-center">
-            <p className="text-sm text-gray-500">
-              Already have an account?{" "}
-              <Button
-                variant="link"
-                size="sm"
-                className="h-auto p-0 font-semibold text-[#5426B8] hover:text-[#451D96]"
-                render={<Link href="/login" />}
-              >
-                Sign In
-              </Button>
+              <FieldDescription className="text-center text-sm">
+                Already have an account?{" "}
+                <Link
+                  href="/login" 
+                  className="font-semibold text-[#5426B8] hover:underline"
+                >
+                  Log In
+                </Link>
+              </FieldDescription>
+
+              <div className="my-6 flex items-center gap-3">
+                <Separator className="h-px flex-1 bg-[#EAE7F2]" />
+                <span className="text-xs font-medium text-gray-400">
+                  or continue with email
+                </span>
+                <Separator className="h-px flex-1 bg-[#EAE7F2]" />
+              </div>
+                    {/* Social Sign-in */}
+              
+                <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-2">
+                    <Button className="w-ful" >
+                      <Icon icon="devicon:google" />
+                      Sign in with Google
+                    </Button>
+                    <Button className="w-full" >
+                      <Icon icon="mdi:github" />
+                      Sign in with GitHub
+                    </Button>
+                </div>
+            </form>
+
+            <FieldSeparator className="my-5">
+              Secure registration
+            </FieldSeparator>
+
+            <p className="text-center text-xs leading-relaxed text-gray-400">
+              By creating an account, you agree to our{" "}
+              <Link href="/terms" className="text-[#5426B8] hover:underline">
+                Terms of Service
+              </Link>{" "}
+              and{" "}
+              <Link href="/privacy" className="text-[#5426B8] hover:underline">
+                Privacy Policy
+              </Link>.
             </p>
-          </CardFooter>
+
+          </CardContent>
         </Card>
+
+        <p className="mt-6 text-center text-xs text-gray-400">
+          © 2026 BookNook. Made for book lovers.
+        </p>
+
       </div>
+      </main>
     </div>
   );
 }

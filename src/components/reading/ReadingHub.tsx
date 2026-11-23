@@ -489,7 +489,7 @@ function CatalogueCard({
           <Link
             href={`/read/${book._id}`}
             aria-label={`${readingActionLabel(progress)} ${book.name}`}
-            className="mt-2 flex h-8 items-center justify-center gap-1.5 rounded-lg bg-[#5d24e2] text-[10px] font-bold tracking-wide text-white uppercase transition-colors hover:bg-[#8B5CF6] focus-visible:ring-2 focus-visible:ring-[#8B5CF6] focus-visible:outline-none dark:bg-[#8B5CF6] dark:hover:bg-[#5d24e2]"
+            className="mt-2 flex h-8 items-center justify-center gap-1.5 rounded-lg bg-[#5d24e2] text-[10px] font-bold tracking-wide text-white uppercase transition-colors hover:bg-[#8B5CF6] focus-visible:ring-2 focus-visible:ring-[#8B5CF6] focus-visible:outline-none dark:bg-[#5d24e2] dark:hover:bg-[#8B5CF6]"
           >
             <BookOpen size={12} aria-hidden="true" />
             {readingActionLabel(progress)}

@@ -4,6 +4,7 @@ import "./globals.css";
 import { cn } from "@/lib/utils";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+
 import { Toaster } from "@/components/ui/sonner";
 
 
@@ -44,7 +45,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <Navbar/>
         {children}
         <Footer />
-        <Toaster position="top-center" richColors closeButton />
+        
+         <Toaster position="top-center" richColors />
+        
         </body>
     </html>
   );

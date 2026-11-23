@@ -11,7 +11,7 @@ import {
   Eye,
   Loader2,
 } from "lucide-react";
-import { toast } from "sonner";
+ 
 import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
@@ -33,6 +33,7 @@ import {
 } from "@/components/ui/select";
 import { addMyBook } from "@/lib/my-books";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 
 
 const CATEGORIES = [
@@ -91,7 +92,7 @@ export default function AddBookPage() {
     e.preventDefault();
 
     if (!category) {
-      toast.error("Category is required", {
+      toast.warning("Category is required",{
         description: "Please pick a category for this book.",
       });
       return;
@@ -141,7 +142,7 @@ export default function AddBookPage() {
       setCategory("");
       setDraft(emptyDraft);
     } catch (error) {
-      toast.error("Could not add book", {
+      toast.error("Could not add book",{
         description:
           error instanceof Error
             ? error.message

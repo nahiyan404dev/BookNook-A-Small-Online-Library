@@ -1,138 +1,248 @@
+
 "use client";
 
+import React, { useState } from "react";
 import Link from "next/link";
-import { useState } from "react";
-import { BookOpen, Eye, EyeOff, Lock, Mail } from "lucide-react";
+import {
+  Mail,
+  LockKeyhole,
+  Eye,
+  EyeOff,
+  Check,
+  X,
+  BookOpen,
+  Sparkles,
+} from "lucide-react";
 import {Icon} from "@iconify/react";
-import AuthAside from "@/components/auth/AuthAside";
+
 import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import {
+  Field,
+  FieldDescription,
+  FieldGroup,
+  FieldLabel,
+  FieldSeparator,
+} from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Separator } from "@/components/ui/separator";
+import { authClient } from "@/lib/auth-client";
+import { redirect } from "next/navigation";
 
-export default function LoginPage() {
+ import { toast } from "sonner";
+
+import { Separator } from "@/components/ui/separator";
+import AuthAside from "@/components/auth/AuthAside";
+
+
+
+
+export default function LogInPage() {
+
+  const handleEmailLogin =async(e:React.SubmitEvent<HTMLElement>)=>{
+    e.preventDefault();
+    const formData= new FormData(e.target);
+    const user= Object.fromEntries(formData.entries()) as {email:string, password:string};
+    
+    const {data, error}= await authClient.signIn.email({
+        ...user,
+    });
+    if(data){
+       toast.success("Login Successfully!",{
+      description: "You've successfully logged into BookNook.",
+      
+    });
+      redirect('/')
+    }
+    if(error){
+      toast.error("Login Failed!",{
+    
+      description: error.message,
+      
+    });
+    }
+  }
+
+
   const [showPassword, setShowPassword] = useState(false);
 
+  const [password, setPassword] = useState("");
+  const passwordRules = [
+    {
+      label: "At least 8 characters",
+      valid: password.length >= 8,
+    },
+    {
+      label: "One uppercase letter",
+      valid: /[A-Z]/.test(password),
+    },
+    {
+      label: "One lowercase letter",
+      valid: /[a-z]/.test(password),
+    },
+    {
+      label: "One number",
+      valid: /[0-9]/.test(password),
+    },
+    {
+      label: "One special character",
+      valid: /[^A-Za-z0-9]/.test(password),
+    },
+  ];
+
+
+
   return (
-    <div className="flex min-h-screen bg-[#F5F4FA]">
+    <div className="min-h-screen flex bg-[#F5F4FA] dark:bg-black">
       <AuthAside />
+      <main className="flex flex-1 items-center justify-center px-4 py-10 sm: px-8">
+      <div className="w-full max-w-md">
 
-      {/* Login Form */}
-      <main className="flex flex-1 items-center justify-center px-4 py-10 sm:px-8">
-        <div className="w-full max-w-md">
-          {/* Mobile logo */}
-          <Link
-            href="/"
-            className="mb-8 flex items-center justify-center gap-2.5 lg:hidden"
-          >
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#5426B8] text-white">
-              <BookOpen size={23} strokeWidth={2.2} />
-            </div>
-            <h1 className="text-xl font-bold tracking-tight text-[#19152B]">
-              Book<span className="text-[#5426B8]">Nook</span>
-            </h1>
-          </Link>
+        {/* Brand */}
+        <div className="mb-6 text-center">
+          <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#451D96] text-white shadow-lg shadow-purple-200">
+            <BookOpen size={28} />
+          </div>
 
-          <Card className="gap-0 rounded-2xl border border-[#EAE7F2] bg-white p-6 shadow-xl shadow-purple-100/50 ring-0 sm:p-8">
-            <CardHeader className="gap-0 p-0">
-              <CardTitle
-                role="heading"
-                aria-level={2}
-                className="text-2xl font-bold text-[#19152B]"
-              >
-                Welcome back
+          <h1 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white">
+            BookNook
+          </h1>
+
+          <p className="mt-1 text-sm text-gray-500">
+            Your next favorite book starts here.
+          </p>
+        </div>
+
+        <Card className="border border-purple-100/80 bg-white dark:bg-black shadow-xl shadow-purple-100/50 rounded-2xl">
+
+          <CardHeader className="space-y-2 text-center pb-5">
+            <div className="flex items-center justify-center gap-2">
+              <Sparkles size={18} className="text-[#5426B8]" />
+              <CardTitle className="text-2xl font-bold text-gray-900 dark:text-[#5426B8]">
+                Welcome Back
               </CardTitle>
-              <CardDescription className="mt-1 text-sm text-gray-500">
-                Sign in to continue to your reading space.
-              </CardDescription>
-            </CardHeader>
+            </div>
 
-            <CardContent className="p-0">              
+            <CardDescription className="text-gray-500">
+              Join BookNook and discover your next great read.
+            </CardDescription>
+          </CardHeader>
 
-              {/* Email + Password */}
-              <form className="space-y-4" action="/">
-                <div>
-                  <Label
-                    htmlFor="email"
-                    className="mb-1.5 block text-sm font-semibold text-[#19152B]"
-                  >
-                    Email
-                  </Label>
+          <CardContent>
+            <form className="space-y-5" onSubmit={handleEmailLogin}>
+
+              <FieldGroup className="gap-4">
+                {/* Email */}
+                <Field>
+                  <FieldLabel htmlFor="email">
+                    <Mail size={16} />
+                    Email Address
+                  </FieldLabel>
+
+                  <Input
+                    id="email"
+                    name="email"
+                    type="email"
+                    placeholder="name@example.com"
+                    className="h-11 rounded-xl focus-visible:ring-[#5426B8]"
+                    autoComplete="email"
+                    required
+                  />
+                </Field>
+
+                {/* Password */}
+                <Field>
+                  <FieldLabel htmlFor="password">
+                    <LockKeyhole size={16} />
+                    Password
+                  </FieldLabel>
+
                   <div className="relative">
-                    <Mail
-                      size={17}
-                      className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400"
-                    />
-                    <Input
-                      id="email"
-                      name="email"
-                      type="email"
-                      required
-                      autoComplete="email"
-                      placeholder="you@example.com"
-                      className="h-11 rounded-xl border-[#dcd6cc] bg-white pl-10 pr-4 text-sm text-[#19152B] placeholder:text-gray-400 focus-visible:border-[#5426B8] focus-visible:ring-2 focus-visible:ring-[#5426B8]/20"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <div className="mb-1.5 flex items-center justify-between">
-                    <Label
-                      htmlFor="password"
-                      className="block text-sm font-semibold text-[#19152B]"
-                    >
-                      Password
-                    </Label>
-                    <Link
-                      href="/forgot-password"
-                      className="text-xs font-semibold text-[#5426B8] hover:underline"
-                    >
-                      Forgot password?
-                    </Link>
-                  </div>
-                  <div className="relative">
-                    <Lock
-                      size={17}
-                      className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400"
-                    />
                     <Input
                       id="password"
                       name="password"
                       type={showPassword ? "text" : "password"}
+                      placeholder="Enter your Password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      className="h-11 rounded-xl pr-12 focus-visible:ring-[#5426B8]"
+                      autoComplete="new-password"
                       required
-                      autoComplete="current-password"
-                      placeholder="••••••••"
-                      className="h-11 rounded-xl border-[#dcd6cc] bg-white pl-10 pr-11 text-sm text-[#19152B] placeholder:text-gray-400 focus-visible:border-[#5426B8] focus-visible:ring-2 focus-visible:ring-[#5426B8]/20"
                     />
+
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      aria-label={
-                        showPassword ? "Hide password" : "Show password"
-                      }
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 transition-colors hover:text-[#5426B8]"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-[#5426B8]"
+                      aria-label={showPassword ? "Hide password" : "Show password"}
                     >
-                      {showPassword ? <EyeOff size={17} /> : <Eye size={17} />}
+                      {showPassword ? (
+                        <EyeOff size={19} />
+                      ) : (
+                        <Eye size={19} />
+                      )}
                     </button>
                   </div>
-                  <div className="mt-5">
-                    <Button
-                  type="submit"
-                  className="h-11 w-full rounded-xl bg-[#5426B8] font-semibold text-white shadow-md shadow-purple-200 hover:bg-[#451D96] hover:text-white"
+
+                  {/* Password Validation */}
+                  {password.length > 0 && (
+                    <div className="mt-3 rounded-xl bg-gray-50 p-3 space-y-2">
+                      <p className="text-xs font-semibold text-gray-700">
+                        Password requirements
+                      </p>
+
+                      {passwordRules.map((rule) => (
+                        <div
+                          key={rule.label}
+                          className="flex items-center gap-2 text-xs"
+                        >
+                          {rule.valid ? (
+                            <Check size={14} className="text-green-600" />
+                          ) : (
+                            <X size={14} className="text-gray-400" />
+                          )}
+
+                          <span
+                            className={
+                              rule.valid
+                                ? "text-green-600"
+                                : "text-gray-500"
+                            }
+                          >
+                            {rule.label}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </Field>
+                 
+              </FieldGroup>
+
+              {/* Submit */}
+              <Button
+                type="submit"
+                
+                className="h-12 w-full rounded-xl bg-[#451D96] text-base font-semibold text-white shadow-md shadow-purple-200 transition-all hover:bg-[#5426B8] disabled:opacity-50"
+              >
+                Log In
+              </Button>
+
+              <FieldDescription className="text-center text-sm">
+                Don&apos;t have an account?{" "}
+                <Link
+                  href="/register" 
+                  className="font-semibold text-[#5426B8] hover:underline"
                 >
-                  Sign In
-                </Button>
-                  </div>
-                </div>
-                {/* Divider */}
+                  sign up
+                </Link>
+              </FieldDescription>
+
               <div className="my-6 flex items-center gap-3">
                 <Separator className="h-px flex-1 bg-[#EAE7F2]" />
                 <span className="text-xs font-medium text-gray-400">
@@ -143,7 +253,7 @@ export default function LoginPage() {
                     {/* Social Sign-in */}
               
                 <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-2">
-                    <Button className="w-full" >
+                    <Button className="w-ful" >
                       <Icon icon="devicon:google" />
                       Sign in with Google
                     </Button>
@@ -151,26 +261,34 @@ export default function LoginPage() {
                       <Icon icon="mdi:github" />
                       Sign in with GitHub
                     </Button>
-                </div> 
-                
-              </form>
-            </CardContent>
+                </div>
+            </form>
 
-            <CardFooter className="mt-6 justify-center p-0">
-              <p className="text-sm text-gray-500">
-                New to BookNook?{" "}
-                <Button
-                  variant="link"
-                  className="h-auto p-0 font-semibold text-[#5426B8] hover:text-[#451D96]"
-                  render={<Link href="/register" />}
-                >
-                  Create an account
-                </Button>
-              </p>
-            </CardFooter>
-          </Card>
-        </div>
+            <FieldSeparator className="my-5">
+              Secure registration
+            </FieldSeparator>
+
+            <p className="text-center text-xs leading-relaxed text-gray-400">
+              By creating an account, you agree to our{" "}
+              <Link href="/terms" className="text-[#5426B8] hover:underline">
+                Terms of Service
+              </Link>{" "}
+              and{" "}
+              <Link href="/privacy" className="text-[#5426B8] hover:underline">
+                Privacy Policy
+              </Link>.
+            </p>
+
+          </CardContent>
+        </Card>
+
+        <p className="mt-6 text-center text-xs text-gray-400">
+          © 2026 BookNook. Made for book lovers.
+        </p>
+
+      </div>
       </main>
     </div>
   );
 }
+

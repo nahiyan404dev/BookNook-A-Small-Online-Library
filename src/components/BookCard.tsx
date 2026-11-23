@@ -3,7 +3,7 @@
 import { useState, useSyncExternalStore } from "react";
 import Link from "next/link";
 import { BookOpen, ShoppingCart, Check, Heart } from "lucide-react";
-import { toast } from "sonner";
+
 
 import BookCover from "@/components/BookCover";
 import { formatPrice, getOriginalPrice, type Book } from "@/lib/books";
@@ -15,6 +15,8 @@ import {
   subscribeToWishlist,
 } from "@/lib/wishlist";
 import { cn } from "@/lib/utils";
+ import { toast } from "sonner";
+
 
 type BookCardProps = {
   book: Book;
@@ -37,8 +39,8 @@ export default function BookCard({ book }: BookCardProps) {
     if (inCart) return;
 
     setInCart(true);
-    toast.success("Added to your cart", {
-      description: `${book.name} is waiting for you at checkout.`,
+     toast.success("Added to Cart!",{
+      description: `"${book.name}" has been successfully added to your cart.`,
     });
   };
 
@@ -47,7 +49,7 @@ export default function BookCard({ book }: BookCardProps) {
       removeFromWishlist(book._id);
       notifyWishlistChange();
 
-      toast.info("Removed from wishlist", {
+      toast.info("Removed from wishlist",{
         description: `"${book.name}" is no longer one of your favourites.`,
       });
       return;
@@ -56,7 +58,7 @@ export default function BookCard({ book }: BookCardProps) {
     addToWishlist(book._id);
     notifyWishlistChange();
 
-    toast.success("Added to wishlist", {
+    toast.success("Added to wishlist",{
       description: `Find "${book.name}" under Wishlist.`,
     });
   };

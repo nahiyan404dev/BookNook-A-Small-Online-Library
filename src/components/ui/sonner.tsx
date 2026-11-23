@@ -27,41 +27,41 @@ const Toaster = ({ ...props }: ToasterProps) => {
   const isDark = useIsDark()
 
   return (
-    <Sonner
-      theme={isDark ? "dark" : "light"}
-      className="toaster group"
-      icons={{
-        success: (
-          <HugeiconsIcon icon={CheckmarkCircle02Icon} strokeWidth={2} className="size-4" />
-        ),
-        info: (
-          <HugeiconsIcon icon={InformationCircleIcon} strokeWidth={2} className="size-4" />
-        ),
-        warning: (
-          <HugeiconsIcon icon={Alert02Icon} strokeWidth={2} className="size-4" />
-        ),
-        error: (
-          <HugeiconsIcon icon={MultiplicationSignCircleIcon} strokeWidth={2} className="size-4" />
-        ),
-        loading: (
-          <HugeiconsIcon icon={Loading03Icon} strokeWidth={2} className="size-4 animate-spin" />
-        ),
-      }}
-      style={
-        {
-          "--normal-bg": "var(--popover)",
-          "--normal-text": "var(--popover-foreground)",
-          "--normal-border": "var(--border)",
-          "--border-radius": "var(--radius)",
-        } as React.CSSProperties
-      }
-      toastOptions={{
-        classNames: {
-          toast: "cn-toast",
-        },
-      }}
-      {...props}
-    />
+     <Sonner
+  theme={isDark ? "dark" : "light"}
+  className="toaster group"
+  icons={{
+    success: (
+      <HugeiconsIcon icon={CheckmarkCircle02Icon} strokeWidth={2} className="size-4" />
+    ),
+    info: (
+      <HugeiconsIcon icon={InformationCircleIcon} strokeWidth={2} className="size-4" />
+    ),
+    warning: (
+      <HugeiconsIcon icon={Alert02Icon} strokeWidth={2} className="size-4" />
+    ),
+    error: (
+      <HugeiconsIcon icon={MultiplicationSignCircleIcon} strokeWidth={2} className="size-4" />
+    ),
+    loading: (
+      <HugeiconsIcon icon={Loading03Icon} strokeWidth={2} className="size-4 animate-spin" />
+    ),
+  }}
+  style={
+    {
+      "--normal-bg": isDark ? "#1C1925" : "#EAE7F2",
+      "--normal-text": isDark ? "#F5F3FA" : "#292435",
+      "--normal-border": isDark ? "#383244" : "#D6D0E3",
+      "--border-radius": "12px",
+    } as React.CSSProperties
+  }
+  toastOptions={{
+    classNames: {
+      toast: "cn-toast shadow-md",
+    },
+  }}
+  {...props}
+/>
   )
 }
 

@@ -15,6 +15,8 @@ import {
   BookPlus,
   Heart,
   BookText,
+  LogOut,
+  Settings,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -25,7 +27,21 @@ import {
 } from "@/components/ui/sheet";
 import ThemeToggle from "@/components/ThemeToggle";
 import NavbarSearch from "@/components/NavbarSearch";
+import { authClient } from "@/lib/auth-client";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 
+
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+
+ 
 
 const navLinks = [
   { name: "Home", href: "/", icon: BookOpen },
@@ -40,6 +56,13 @@ const navLinks = [
 export default function Navbar() {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
+
+  const {data:session} = authClient.useSession();
+  const user =session?.user;
+  
+   const handleLogOut= ()=>{
+      authClient.signOut();
+   }
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-[#EAE7F2] bg-[#F5F4FA]/95 backdrop-blur-xl dark:border-white/10 dark:bg-[#19152B]/95">
@@ -68,7 +91,50 @@ export default function Navbar() {
         <div className="flex-1" />
 
         <ThemeToggle />
-        <Link href="/login">
+        {
+          user? <DropdownMenu>
+      <DropdownMenuTrigger render={ 
+        <Avatar>
+              <AvatarImage
+              referrerPolicy="no-referrer"
+                src={user?.image as string}
+                alt="user image"
+                className="grayscale "
+              />
+              <AvatarFallback>{user?.name.charAt(0)}</AvatarFallback>
+        </Avatar>
+      }/>
+      <DropdownMenuContent>
+        <DropdownMenuGroup>
+          <DropdownMenuLabel>
+            <Avatar>
+              <AvatarImage
+              referrerPolicy="no-referrer"
+                src={user?.image as string}
+                alt="user image"
+                className="grayscale mr-1 inline"
+              />
+              <AvatarFallback>{user?.name.charAt(0)}</AvatarFallback>
+            </Avatar><h1 className="flex mt-1 font-bold">My Account</h1>
+              <p className="flex">{user?.email}</p> 
+            </DropdownMenuLabel>
+          <DropdownMenuItem>
+            <Link href="/profile">
+            <UserRound size={16} className=" mr-1 inline"/>  Profile
+             </Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem>
+            <Settings size={18} className=" mr-1 inline"/>Settings
+             
+          </DropdownMenuItem>
+        </DropdownMenuGroup>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem onClick={handleLogOut}>
+          <LogOut size={18} className=" mr-1 inline"/> Log out
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu> : <>
+      <Link href="/login">
         <Button
           variant="outline"
           className=" gap-2 shrink-0 rounded-full border-[#dcd6cc] px-4 font-semibold text-[#5426B8] transition-all hover:border-[#5426B8] hover:bg-[#EDE9FE] hover:text-[#5426B8] sm:px-4 dark:border-white/10 dark:bg-white/5 dark:text-[#C4B5FD] dark:hover:border-[#8B5CF6] dark:hover:bg-[#5426B8] dark:hover:text-white"
@@ -90,6 +156,10 @@ export default function Navbar() {
           
         </Button>
         </Link>
+    </>
+             
+        }
+             
 
         {/* Sidebar Menu (all devices) */}
         <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
@@ -160,7 +230,44 @@ export default function Navbar() {
 
             {/* Auth Actions */}
             <div className="flex flex-col gap-3">
-              <Link href="/login" onClick={() => setMenuOpen(false)}>
+               { 
+                user? <DropdownMenu>
+                    <DropdownMenuTrigger render={ 
+                      <Avatar>
+                            <AvatarImage
+                            referrerPolicy="no-referrer"
+                              src={user?.image as string}
+                              alt="user image"
+                              className="grayscale "
+                            />
+                            <AvatarFallback>{user?.name.charAt(0)}</AvatarFallback>
+                      </Avatar>
+                    }/>
+                    <DropdownMenuContent>
+                      <DropdownMenuGroup>
+                        <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                        <DropdownMenuItem>
+                          <Link
+                            href="/profile"
+                            onClick={() => setMenuOpen(false)}
+                            className="flex w-full items-center"
+                          >
+                            <UserRound size={16} className=" mr-1 inline"/> Profile
+                          </Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem>
+                          <Settings size={18} className=" mr-1 inline"/>Settings
+                          
+                        </DropdownMenuItem>
+                      </DropdownMenuGroup>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem onClick={handleLogOut}>
+                        <LogOut size={18} className=" mr-1 inline"/> Log outz
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu> : <>
+                    
+                    <Link href="/login" onClick={() => setMenuOpen(false)}>
               <Button
                 variant="outline"
                 className="w-full rounded-xl border-[#dcd6cc] font-semibold text-[#19152B] hover:border-[#5426B8] hover:bg-[#EDE9FE] hover:text-[#5426B8] dark:border-white/10 dark:bg-white/5 dark:text-white dark:hover:border-[#8B5CF6] dark:hover:bg-white/10 dark:hover:text-white"
@@ -168,7 +275,7 @@ export default function Navbar() {
               >
                 
                   <UserRound size={17} className="mr-1 inline" />
-                  Sign In
+                  Login 
                 
               </Button>
               </Link>
@@ -180,6 +287,9 @@ export default function Navbar() {
                 Sign up
               </Button>
               </Link>
+                  </>
+               }
+              
             </div>
           </SheetContent>
         </Sheet>
@@ -193,3 +303,4 @@ export default function Navbar() {
     </header>
   );
 }
+
