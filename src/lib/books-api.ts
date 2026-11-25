@@ -1,12 +1,12 @@
 import type { Book } from "@/lib/books";
 
-export const BOOKS_API = "http://localhost:5000";
+
 
 /** Mongo ObjectId shape — the backend throws a 500 on anything else. */
 const OBJECT_ID = /^[a-f\d]{24}$/i;
 
 export async function getBooks(): Promise<Book[]> {
-  const res = await fetch(`${BOOKS_API}/books`, { cache: "no-store" });
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/books`, { cache: "no-store" });
 
   if (!res.ok) {
     throw new Error(`The books service responded with ${res.status}.`);
@@ -25,7 +25,11 @@ export async function getBook(id: string): Promise<Book | null> {
     return null;
   }
 
-  const res = await fetch(`${BOOKS_API}/books/${id}`, { cache: "no-store" });
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/books/${id}`,{
+    headers:{
+      authrization:"user logged in"
+    }
+  });
 
   if (res.status === 404) {
     return null;
