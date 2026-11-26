@@ -80,10 +80,6 @@ export default function SignUpPage() {
       valid: password.length >= 8,
     },
     {
-      label: "One uppercase letter",
-      valid: /[A-Z]/.test(password),
-    },
-    {
       label: "One lowercase letter",
       valid: /[a-z]/.test(password),
     },
