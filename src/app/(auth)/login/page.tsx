@@ -67,7 +67,12 @@ export default function LogInPage() {
     });
     }
   }
-
+   const handleGoogleSignIn= async() =>{
+        const resData = await authClient.signIn.social({
+      provider: "google",
+      });
+      console.log('Sign In with Google',resData)
+    }
 
   const [showPassword, setShowPassword] = useState(false);
 
@@ -249,7 +254,7 @@ export default function LogInPage() {
                     {/* Social Sign-in */}
               
                 <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-2">
-                    <Button className="w-ful" >
+                    <Button onClick={handleGoogleSignIn} className="w-ful" >
                       <Icon icon="devicon:google" />
                       Sign in with Google
                     </Button>

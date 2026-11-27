@@ -23,7 +23,7 @@ export async function getBooks(): Promise<Book[]> {
   try {
     const apiUrl = getApiUrl();
 
-    console.log("Fetching books from:", `${apiUrl}/books`);
+    
 
     const res = await fetch(`${apiUrl}/books`, {
       cache: "no-store",
