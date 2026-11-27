@@ -71,8 +71,13 @@ export default function LogInPage() {
         const resData = await authClient.signIn.social({
       provider: "google",
       });
-      console.log('Sign In with Google',resData)
+      if(resData){
+       toast.success("Login Successfully!",{
+      description: "You've successfully logged into BookNook.", 
+      });
     }
+   }
+  
 
   const [showPassword, setShowPassword] = useState(false);
 
@@ -292,4 +297,3 @@ export default function LogInPage() {
     </div>
   );
 }
-
